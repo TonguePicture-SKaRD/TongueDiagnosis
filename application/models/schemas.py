@@ -92,3 +92,21 @@ class InfoResponse(BaseResponse):
     }
     """
     data: Union[UserInfo, None]
+
+
+class TongueAnalysisPic(BaseModel):
+    """
+    fileData: file
+    """
+    pass
+
+
+class TongueAnalysisResponse(BaseResponse):
+    """
+    code: int
+    message: str
+    data: {
+        object: Unknown
+    }
+    """
+    pass

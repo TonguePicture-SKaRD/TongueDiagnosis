@@ -62,7 +62,7 @@ async def get_user(email: str, db: Session):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-def authenticate_user(email: str, password: str, db: Session):
+async def authenticate_user(email: str, password: str, db: Session):
     """
     验证用户信息
     @param email: str, 用户邮箱号
