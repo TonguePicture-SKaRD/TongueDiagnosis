@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from .database import Base
 
 
 class User(Base):  # 用户基本信息
@@ -11,7 +11,7 @@ class User(Base):  # 用户基本信息
                 password varchar(255) not null,
             );
     """
-    __tableName__ = 'User'
+    __tablename__ = 'User'
     id = Column(Integer, primary_key=True)  # 自增主键
     email = Column(String(255))
     password = Column(String(255))

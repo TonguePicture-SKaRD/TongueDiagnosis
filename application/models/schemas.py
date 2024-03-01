@@ -24,7 +24,6 @@ class UserBase(BaseModel):
     """
     id int
     email str
-
     """
     id: int = None
     email: str
@@ -41,16 +40,25 @@ class UserAuth(UserBase):
 
 class UserLogin(BaseModel):
     """
-    email str
-    password str
+    email: str
+    password: str
     """
     email: str
     password: str
 
 
-class UserInfo(BaseModel):
+class UserRegister(BaseModel):
     """
-    email str
+    email: str
+    password: str
+    """
+    email: str
+    password: str
+
+
+class UserInfo(UserBase):
+    """
+    email: str
     """
     email: str
 

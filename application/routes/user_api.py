@@ -78,16 +78,15 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 
 
 @router_user.get('/info', response_model=schemas.InfoResponse)
-async def info_get(user: schemas.User = Depends(get_current_user)):
+async def info_get(user: schemas.UserInfo = Depends(get_current_user)):
     """
     获取用户信息的路由
-    @param user: User
+    @param user: UserInfo
         email: str
-        username: str
     @return: InfoResponse
         code: int
         message: str
-        data: User
+        data: UserInfo
     """
     if not user:
         return schemas.InfoResponse(
