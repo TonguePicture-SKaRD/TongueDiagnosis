@@ -7,8 +7,8 @@ from ..orm.database import get_db
 router_tongue_analysis = APIRouter()
 
 
-@router_tongue_analysis.post('/upload', response_model=schemas.TongueAnalysisResponse)
-def upload(fileData: schemas.TongueAnalysisPic, db: Session = Depends(get_db)):
+@router_tongue_analysis.post('/upload', response_model=schemas.UploadResponse)
+def upload(fileData: schemas.Upload, db: Session = Depends(get_db)):
     """
     上传舌头图片的路由
     @param fileData: TongueAnalysisPic

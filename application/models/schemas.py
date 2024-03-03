@@ -24,16 +24,16 @@ class Token(BaseModel):
 
 class UserBase(BaseModel):
     """
-    id int
+    ID int
     email str
     """
-    id: int = None
+    ID: int = None
     email: str
 
 
 class UserAuth(UserBase):
     """
-    id int
+    ID int
     email str
     password str
     """
@@ -56,6 +56,39 @@ class UserRegister(BaseModel):
     """
     email: str
     password: str
+
+
+class Result(BaseModel):
+    """
+    tongue_color: int
+    coating_color: int
+    tongue_thickness: int
+    rot_greasy: int
+    """
+    tongue_color: int
+    coating_color: int
+    tongue_thickness: int
+    rot_greasy: int
+
+
+class Record(BaseModel):
+    """
+    ID: int
+    user_ID: int
+    img_src: str
+    result: Result
+    """
+    ID: int
+    user_ID: int
+    img_src: str
+    result: Result
+
+
+class Upload(BaseModel):
+    """
+    fileData: str
+    """
+    fileData: str
 
 
 class LoginResponse(BaseResponse):
@@ -89,22 +122,24 @@ class InfoResponse(BaseResponse):
     data: Union[UserBase, None]
 
 
-class TongueAnalysisPic(BaseModel):
+class RecordResponse(BaseResponse):
     """
-    fileData: file
+    code: int
+    message: str
+    data: List[Record]
     """
-    pass
+    data: list[Record]
 
 
-class TongueAnalysisResponse(BaseResponse):
+class UploadResponse(BaseResponse):
     """
     code: int
     message: str
     data: {
-        object: Unknown
+        result: Result
     }
     """
-    pass
+    data: Union[Result, None]
 
 
 class ExtendedOAuth2PasswordRequestForm:

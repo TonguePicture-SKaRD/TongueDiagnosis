@@ -37,7 +37,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session 
     实现获取当前用户信息的函数
     @param token: Token, 当前用户的token
     @param db: Session, router传入的db，用于链接数据库
-    @return: User, 返回当前用户的信息
+    @return: User.sql, 返回当前用户的信息
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
