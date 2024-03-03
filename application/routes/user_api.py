@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 from ..core import create_access_token, get_current_user
 from ..models import schemas
-from ..orm import register_user, login_user, get_user
+from ..orm import register_user, login_user, get_user, get_user_record
 from ..orm.database import get_db
 
 router_user = APIRouter()
@@ -86,7 +86,7 @@ def info_get(user: schemas.UserBase = Depends(get_current_user)):
         code: int
         message: str
         data: UserBase
-            id: int
+            ID: int
             email: str
     """
     if not user:
@@ -96,7 +96,7 @@ def info_get(user: schemas.UserBase = Depends(get_current_user)):
             data=None
         )
     user_data_temp = schemas.UserBase(
-        id=user.id,
+        ID=user.id,
         email=user.email
     )
     return schemas.InfoResponse(
@@ -104,3 +104,46 @@ def info_get(user: schemas.UserBase = Depends(get_current_user)):
         message="operation success",
         data=user_data_temp
     )
+
+
+@router_user.get('/record', response_model=schemas.RecordResponse)
+def record_get(user: schemas.UserBase = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    获取用户记录的路由
+    @param user: User
+    @param db: Session, router传入的db，用于链接数据库
+    @return: RecordResponse
+        code: int
+        message: str
+        data: List[Record]
+            ID: int
+            pic: str
+            result: Result
+
+    """
+    if not user:
+        return schemas.RecordResponse(
+            code=101,
+            message="operation failed",
+            data=None
+        )
+    else:
+        user_record = get_user_record(ID=user.id, db=db)
+        data_temp = []
+        for record in user_record:
+            data_temp.append(schemas.Record(
+                ID=record.id,
+                user_ID=record.user_id,
+                img_src=record.img_src,
+                result=schemas.Result(
+                    tongue_color=record.tongue_color,
+                    coating_color=record.coating_color,
+                    tongue_thickness=record.tongue_thickness,
+                    rot_greasy=record.rot_greasy
+                )
+            ))
+        return schemas.RecordResponse(
+            code=0,
+            message="operation success",
+            data=data_temp
+        )

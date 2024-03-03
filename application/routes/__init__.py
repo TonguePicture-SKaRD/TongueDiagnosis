@@ -1,5 +1,5 @@
 from .user_api import router_user
-from .tongue_analysis import router_tongue_analysis
+from .model_api import router_tongue_analysis
 
 
 def register_routes(app):

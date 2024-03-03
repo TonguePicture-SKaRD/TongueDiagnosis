@@ -57,7 +57,7 @@ def get_user(email: str, db: Session):
     获取用户信息
     @param email: str, 用户邮箱号
     @param db: Session, router传入的db，用于链接数据库
-    @return: User, 用户信息
+    @return: User.sql, 用户信息
     """
     return db.query(models.User).filter(models.User.email == email).first()
 
@@ -68,7 +68,7 @@ def authenticate_user(email: str, password: str, db: Session):
     @param email: str, 用户邮箱号
     @param password: str, 用户密码
     @param db: Session, router传入的db，用于链接数据库
-    @return: User, 鉴权后确定可以返回的用户信息
+    @return: User.sql, 鉴权后确定可以返回的用户信息
              False, 鉴权后不可返回用户信息
     """
     password = hashlib.sha256(password.encode("utf-8")).hexdigest()
@@ -79,3 +79,13 @@ def authenticate_user(email: str, password: str, db: Session):
     if not user.user_password == password:
         return False
     return user
+
+
+def get_user_record(ID: int, db: Session):
+    """
+    获取用户的记录
+    @param ID: int, 用户ID
+    @param db: Session, router传入的db，用于链接数据库
+    @return: list[TongueAnalysis.sql], 用户的记录
+    """
+    return db.query(models.TongueAnalysis).filter(models.TongueAnalysis.user_id == ID).all()
