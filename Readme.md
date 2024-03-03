@@ -69,6 +69,7 @@ TongueDiagnosis{
 
 ​	（3）pip install uvicorn
 
+​	（4）pip install jose
 2. 安装npm依赖
 
 ​	（1）[Node.js (nodejs.org)](https://nodejs.org/en)安装node.js，20.11.1 LTS版本
