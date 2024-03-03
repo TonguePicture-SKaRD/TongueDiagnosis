@@ -11,7 +11,7 @@ router_user = APIRouter()
 
 
 @router_user.post('/register', response_model=schemas.RegisterResponse)
-async def register(schema: schemas.UserRegister, db: Session = Depends(get_db)):
+def register(schema: schemas.UserRegister, db: Session = Depends(get_db)):
     """
     注册账户的路由
     @param schema: UserRegister
@@ -35,12 +35,13 @@ async def register(schema: schemas.UserRegister, db: Session = Depends(get_db)):
     return response
 
 
-@router_user.post('/token', response_model=schemas.LoginResponse)
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                db: Session = Depends(get_db)):
+@router_user.post('/login', response_model=schemas.LoginResponse)
+def login(form_data: Annotated[schemas.ExtendedOAuth2PasswordRequestForm, Depends()],
+          db: Session = Depends(get_db)):
     """
     登录账号的路由
-    @param form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    @param form_data: Annotated[schemas.ExtendedOAuth2PasswordRequestForm, Depends()]
+        ID: str
         email: str
         password: str
     @param db: 路由传回的当前会话的db，获取数据库链接
@@ -51,13 +52,10 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     """
     email = form_data.email
     password = form_data.password
-    code = await login_user(email=email, password=password, db=db)
+    code = login_user(email=email, password=password, db=db)
     if code == 0:
-        form_data = OAuth2PasswordRequestForm(
-            email=email,
-            password=password
-        )
-        token = await create_access_token(data={"email": form_data.email})
+        user = get_user(email=email, db=db)
+        token = create_access_token(data={"ID": user.id, "email": form_data.email})
         access_token = token
         response = schemas.LoginResponse(
             code=code,
@@ -67,26 +65,29 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     elif code == 101:
         response = schemas.LoginResponse(
             code=code,
-            message='wrong password'
+            message='operation failed',
+            data=None
         )
     else:
         response = schemas.LoginResponse(
             code=code,
-            message='operation failed'
+            message='wrong password',
+            data=None
         )
     return response
 
 
 @router_user.get('/info', response_model=schemas.InfoResponse)
-async def info_get(user: schemas.UserInfo = Depends(get_current_user)):
+def info_get(user: schemas.UserBase = Depends(get_current_user)):
     """
     获取用户信息的路由
-    @param user: UserInfo
-        email: str
+    @param user: User
     @return: InfoResponse
         code: int
         message: str
-        data: UserInfo
+        data: UserBase
+            id: int
+            email: str
     """
     if not user:
         return schemas.InfoResponse(
@@ -94,8 +95,9 @@ async def info_get(user: schemas.UserInfo = Depends(get_current_user)):
             message="operation failed",
             data=None
         )
-    user_data_temp = schemas.UserInfo(
-        email=user.email,
+    user_data_temp = schemas.UserBase(
+        id=user.id,
+        email=user.email
     )
     return schemas.InfoResponse(
         code=0,

@@ -8,7 +8,7 @@ router_tongue_analysis = APIRouter()
 
 
 @router_tongue_analysis.post('/upload', response_model=schemas.TongueAnalysisResponse)
-async def upload(fileData: schemas.TongueAnalysisPic, db: Session = Depends(get_db)):
+def upload(fileData: schemas.TongueAnalysisPic, db: Session = Depends(get_db)):
     """
     上传舌头图片的路由
     @param fileData: TongueAnalysisPic

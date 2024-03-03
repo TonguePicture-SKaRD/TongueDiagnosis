@@ -1,5 +1,7 @@
+from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
-from typing import Union
+from typing import Union, Annotated
+from fastapi.param_functions import Form
 
 
 class BaseResponse(BaseModel):
@@ -56,13 +58,6 @@ class UserRegister(BaseModel):
     password: str
 
 
-class UserInfo(UserBase):
-    """
-    email: str
-    """
-    email: str
-
-
 class LoginResponse(BaseResponse):
     """
     code: int
@@ -88,10 +83,10 @@ class InfoResponse(BaseResponse):
     code: int
     message: str
     data: {
-        user: UserInfo
+        user: UserBase
     }
     """
-    data: Union[UserInfo, None]
+    data: Union[UserBase, None]
 
 
 class TongueAnalysisPic(BaseModel):
@@ -110,3 +105,14 @@ class TongueAnalysisResponse(BaseResponse):
     }
     """
     pass
+
+
+class ExtendedOAuth2PasswordRequestForm:
+    def __init__(
+            self,
+            *,
+            email: Annotated[str, Form()],
+            password: Annotated[str, Form()],
+    ):
+        self.email = email
+        self.password = password

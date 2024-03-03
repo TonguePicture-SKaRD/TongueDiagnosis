@@ -30,4 +30,5 @@ class TongueAnalysis(Base):
     FOREIGN KEY (user_id) REFERENCES Users(id)
     );
     """
-    pass
+    __tablename__ = 'TongueAnalysis'
+    id = Column(Integer, primary_key=True)

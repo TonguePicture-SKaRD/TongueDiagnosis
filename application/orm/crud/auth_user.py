@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from application.models import models
 
 
-async def register_user(email: str, password: str, db: Session):
+def register_user(email: str, password: str, db: Session):
     """
     当用户注册账号时，将会调用此函数。
     @param email: str, 用户邮箱号
@@ -31,7 +31,7 @@ async def register_user(email: str, password: str, db: Session):
         return 102
 
 
-async def login_user(email: str, password: str, db: Session):
+def login_user(email: str, password: str, db: Session):
     """
     当用户登录账户时，将调用此函数。
     @param email: str, 用户邮箱号
@@ -52,7 +52,7 @@ async def login_user(email: str, password: str, db: Session):
         return 101  # 其他错误
 
 
-async def get_user(email: str, db: Session):
+def get_user(email: str, db: Session):
     """
     获取用户信息
     @param email: str, 用户邮箱号
@@ -62,7 +62,7 @@ async def get_user(email: str, db: Session):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-async def authenticate_user(email: str, password: str, db: Session):
+def authenticate_user(email: str, password: str, db: Session):
     """
     验证用户信息
     @param email: str, 用户邮箱号
