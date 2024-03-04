@@ -1,5 +1,5 @@
 CREATE TABLE TongueAnalysis (
-    id INT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT,
     img_src VARCHAR(255),
     tongue_color INT,

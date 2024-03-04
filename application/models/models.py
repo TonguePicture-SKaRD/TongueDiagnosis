@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -6,7 +6,7 @@ from .database import Base
 
 class User(Base):  # 用户基本信息
     """
-    CREATE TABLE User.sql (
+    CREATE TABLE User (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255),
     password VARCHAR(255)
@@ -20,7 +20,7 @@ class User(Base):  # 用户基本信息
 
 class TongueAnalysis(Base):
     """
-    CREATE TABLE TongueAnalysis.sql (
+    CREATE TABLE TongueAnalysis (
     id INT PRIMARY KEY,
     user_id INT,
     img_src VARCHAR(255),

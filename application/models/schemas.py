@@ -1,4 +1,3 @@
-from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from typing import Union, Annotated
 from fastapi.param_functions import Form
@@ -68,7 +67,7 @@ class Result(BaseModel):
     tongue_color: int
     coating_color: int
     tongue_thickness: int
-    rot_greasy: int
+    rot_greasy: int  
 
 
 class Record(BaseModel):

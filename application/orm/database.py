@@ -26,6 +26,6 @@ def get_db():
 
 
 engine = create_engine('sqlite:///AppDatabase.db')
-# 将ReusableSession作为sessionmaker的class参数传入，使其创建的Session自动回滚
+# 将ReusableSession作为session maker的class参数传入，使其创建的Session自动回滚
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=ReusableSession)
 Base = declarative_base()
