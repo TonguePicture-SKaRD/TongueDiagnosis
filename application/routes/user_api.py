@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Annotated
 from ..core import create_access_token, get_current_user
@@ -35,7 +34,7 @@ def register(schema: schemas.UserRegister, db: Session = Depends(get_db)):
     return response
 
 
-@router_user.post('/login', response_model=schemas.LoginResponse)
+@router_user.put('/login', response_model=schemas.LoginResponse)
 def login(form_data: Annotated[schemas.ExtendedOAuth2PasswordRequestForm, Depends()],
           db: Session = Depends(get_db)):
     """
