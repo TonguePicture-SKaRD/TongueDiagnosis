@@ -1,105 +1,60 @@
-<script>
-export default {};
+<script lang="ts" setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+// 检测当前页面并且正确显示黄线
+var a;
+const router = useRouter()
+console.log('router:',router.currentRoute.value.path);
+if (router.currentRoute.value.path == "/home") a = '2';
+if (router.currentRoute.value.path == "/check") a = '3';
+
+const activeIndex = ref(a)
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
 </script>
+
+
 <template>
-  <div class="header">
-    <div class="wrapper">
-      <!--logo-->
-      <div class="logo">
-        <h1><a href="https://www.baidu.com">舌诊宝</a></h1>
-      </div>
-      <!--导航nav-->
-      <div class="nav">
-        <ul>
-          <li><a href="https://www.baidu.com">首页</a></li>
-          <li><a href="https://www.baidu.com">检测页面</a></li>
-          <li><a href="https://www.baidu.com">其他</a></li>
-        </ul>
-      </div>
-      <!--用户user-->
-      <div class="user">
-        <ul>
-          <li><h2><a href="#" class="logo">头像</a></h2></li>
-          <li><h2><a href="#">用户user</a></h2></li>
-        </ul>
-      </div>
-    </div>
+<!--顶栏组件-->
+  <div class="Header" />
+  <!--element+的menu组件-->
+  <el-menu
+      :default-active="activeIndex"
+      class="el-menu-demo"
+      mode="horizontal"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b"
+      @select="handleSelect"
+  >
+    <!--logo-->
+    <el-menu-item index="1"><h1><router-link to="/home">舌诊宝</router-link></h1></el-menu-item>
+    <!--导航栏-->
+    <el-menu-item index="2"><h3><router-link to="/home">首页</router-link></h3></el-menu-item>
+    <el-menu-item index="3"><h3><router-link to="/check">检测</router-link></h3></el-menu-item>
+    <el-menu-item index="4"><h3><router-link to="/home">其他</router-link></h3></el-menu-item>
+  </el-menu>
+  <!--用户logo(伪)-->
+  <div class="user">
+    <ul>
+      <li><h2><a href="#" class="logo">头像</a></h2></li>
+      <li><h2><a href="#">用户user</a></h2></li>
+    </ul>
   </div>
 </template>
 
-<style scoped>
-/*check page*/
-/*版心*/
-.wrapper{
-  margin: 0 auto;
-  width: 1200px;
-}
 
-body {
-  background-color: #f3f5f7;
-}
-
-/*头部区域*/
-.header {
-  height: 80px;
-  background-color: white;
-  padding-top: 50px;
-}
-
-.header .wrapper {
-  display: flex;
-}
-
-/*logo*/
-.logo a {
-  position: relative;
-  display: block;
-  width: 150px;
-  height: 60px;
-  bottom: 45px;
-  right: 50px;
-  background-image: url("../assets/Logo_SZB.png");
-  font-size: 0px;
-}
-
-/*导航*/
-.nav {
-  margin-left: 10px;
-  position: relative;
-  bottom: 40px;
-  right: 50px;
-}
-
-.nav ul {
-  display: flex;
-}
-
-.nav li {
-  margin: 0 auto;
-  list-style: none;
-}
-
-.nav li a {
-  margin: 10px 50px;
-  line-height: 80px;
-  background-color: white;
-  font-size: 19px;
-  color: #181818;
-  text-decoration: none;
-}
-
-.nav li a:hover {
-  border-bottom: 2px solid #00a4ff;
-  /*background: #d3d3ca;*/
-}
-
+<style>
 /*用户头像*/
 .user {
   display:flex;
+  width: 150px;
   margin: 0 auto;
   position: relative;
-  bottom: 40px;
-  left: 120px;
+  bottom: 52px;
+  left: 500px;
 }
 .user ul {
   margin: auto;
@@ -113,8 +68,8 @@ body {
 .user ul li a {
   margin: auto;
   text-decoration: none;
-  font-size: 19px;
-  color: #181818;
+  font-size: 16px;
+  color: #ffffff;
 }
 .user ul li a.logo {
   display: block;
