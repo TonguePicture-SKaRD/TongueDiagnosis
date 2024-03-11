@@ -1,4 +1,6 @@
 venv
 .idea
 frontend/node_modules
+application/net/weight/*.pt
+application/net/weight/*.pth
 __pycache__
