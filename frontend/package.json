@@ -12,6 +12,7 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'"
   },
   "dependencies": {
+    "element-plus": "^2.6.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
@@ -23,6 +24,8 @@
     "cypress": "^13.6.3",
     "jsdom": "^24.0.0",
     "start-server-and-test": "^2.0.3",
+    "unplugin-auto-import": "^0.17.5",
+    "unplugin-vue-components": "^0.26.0",
     "vite": "^5.0.11",
     "vitest": "^1.2.2"
   }
