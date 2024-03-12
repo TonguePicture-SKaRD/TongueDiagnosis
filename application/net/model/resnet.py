@@ -161,3 +161,30 @@ def ResNet50(num_classes=2,if_se=False):
     if if_se:
         return ResNetDeep(block_num=[3, 4, 6, 3], num_classes=num_classes,se_block=SeNet)
     return ResNetDeep(block_num=[3, 4, 6, 3], num_classes=num_classes)
+
+
+class ResNetPredictor:
+    def __init__(self, path:list, tasks: list = [5,3,2,2]):
+
+        self.device = torch.device('cpu')
+        self.nets = []
+        for p in range(len(path)):
+            net = ResNet50(tasks[p],True).to(self.device)
+            net.load_state_dict(torch.load(path[p],map_location=self.device))
+            net.eval()
+            self.nets.append(net)
+
+
+    def predict(self,img):
+        img = torch.from_numpy(img)
+        img = img.to(torch.float32)
+
+        result = []
+        for net in self.nets:
+            with torch.no_grad():
+                pred = net(img)
+                pred = torch.softmax(pred,dim=1)
+                pred = torch.argmax(pred,dim=1).cpu().item()
+                result.append(pred)
+
+        return result
