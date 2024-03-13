@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from application.models import models
 from fastapi import Depends
-from ..database import get_db
+from ..database import get_db_object
 
 
 def write_result(
@@ -11,7 +11,7 @@ def write_result(
         tongue_thickness: int,
         rot_greasy: int,
         code: int,
-        db: Session = Depends(get_db)
+        db: Session = get_db_object()
 ):
     """
     写入分析结果

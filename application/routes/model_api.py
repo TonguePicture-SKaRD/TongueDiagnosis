@@ -10,7 +10,7 @@ from ..orm.database import get_db
 from ..orm import write_event, write_result, get_record_by_location
 from ..config import Settings
 
-# from ..net import TonguePredictor
+from ..net import TonguePredictor
 
 router_tongue_analysis = APIRouter()
 
@@ -40,8 +40,8 @@ async def upload(file_data: UploadFile,
         :param function: 保存结果的函数
         :return: None
         """
-        # predictor = TonguePredictor()
-        # predictor.predict(img=img, record_id=record_id, fun=function)
+        predictor = TonguePredictor()
+        predictor.predict(img=img, record_id=record_id, fun=function)
 
     # 保存图片
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -53,12 +53,9 @@ async def upload(file_data: UploadFile,
         f.write(contents)
 
     # 写入事件
-    code = write_event(
-        user_id=user.id,
-        img_src=file_location,
-        state=0,
-        db=db
-    )
+    code = write_event(user_id=user.id, img_src=file_location, state=0, db=db)
+
+    # 模型调用
     if code == 0:
         record = get_record_by_location(file_location, db=db)
         analysis(img=file_data.file, record_id=record.id, function=write_result)
