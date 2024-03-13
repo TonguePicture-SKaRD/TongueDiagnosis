@@ -1,86 +1,73 @@
-from fastapi import APIRouter, Depends
+import os
+from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy.orm import Session
+from datetime import datetime
+from tempfile import SpooledTemporaryFile
 
 from ..core import get_current_user
 from ..models import schemas
 from ..orm.database import get_db
-from ..orm.crud import result_record
+from ..orm import write_event, write_result, get_record_by_location
+from ..config import Settings
+
+from ..net.predict import TonguePredictor
 
 router_tongue_analysis = APIRouter()
 
 
 @router_tongue_analysis.post('/upload', response_model=schemas.UploadResponse)
-def upload(fileData: schemas.Upload,
-           user: schemas.UserBase = Depends(get_current_user),
-           db: Session = Depends(get_db)
-           ):
+async def upload(file_data: UploadFile,
+                 user: schemas.UserBase = Depends(get_current_user),
+                 db: Session = Depends(get_db)
+                 ):
     """
     上传舌头图片的路由
-    @param fileData: TongueAnalysisPic
-        fileData: file
+    @param file_data: schemas.Upload
+        fileData: UploadFile
     @param user: User，当前用户信息
     @param db: 路由传回的当前会话的db，获取数据库链接
     @return: TongueAnalysisResponse
-        code: int
+        code: int  # 0表示图片上传成功，201表示图片上传失败
         message: str
-        data: object
     """
 
-    def get_file(file_data):
+    # 模型分析
+    def analysis(img: SpooledTemporaryFile, record_id: int, function):
         """
-        获取文件
-        等待和前端对接
-        :param file_data: 文件传入方式
-        :return: 图片文件
+        模型分析
+        :param img: 图片
+        :param record_id: 事件id
+        :param function: 保存结果的函数
+        :return: None
         """
-        print(file_data)
-        return 1
+        predictor = TonguePredictor()
+        predictor.predict(img=img, record_id=record_id, fun=function)
 
-    def analysis_tongue_pic(file):
-        """
-        调用模型分析舌头图片
-        等待和模型端对接
-        :param file: 图片文件
-        :return: schemas.Result 分析结果
-        """
-        print(file)
-        try:
-            # 调用模型
-            result = schemas.Result(
-                tongue_color=0,
-                coating_color=2,
-                tongue_thickness=1,
-                rot_greasy=0
-            )
-        except Exception as error:
-            print(error)
-            result = None
-        return result
+    # 保存图片
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_extension = os.path.splitext(file_data.filename)[1]
+    filename = f"{timestamp}{file_extension}"
+    file_location = f"{Settings.IMG_PATH}/{filename}"
+    with open(file_location, "wb") as f:
+        contents = await file_data.read()
+        f.write(contents)
+    f.close()
 
-    file_pic = get_file(fileData.fileData)
-    result_temp = analysis_tongue_pic(file_pic)
-    if result_temp:
-        code = result_record(
-            user_ID=user.id,
-            img_src=fileData.fileData,  # 待与前端对接文件格式
-            result=result_temp,
-            db=db
+    # 写入事件
+    code = write_event(user_id=user.id, img_src=file_location, state=0, db=db)
+
+    # 模型调用
+    if code == 0:
+        record = get_record_by_location(file_location, db=db)
+        analysis(img=file_data.file, record_id=record.id, function=write_result)
+        return schemas.UploadResponse(
+            code=0,
+            message="operation success",
+            data=None
         )
-        if code == 0:
-            return schemas.UploadResponse(
-                code=code,
-                message="operation success",
-                data=result_temp
-            )
-        else:
-            return schemas.UploadResponse(
-                code=code,
-                message="operation failed",
-                data=None
-            )
     else:
         return schemas.UploadResponse(
             code=201,
-            message="The picture is illegal",
+            message="operation failed",
             data=None
         )

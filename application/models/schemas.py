@@ -1,3 +1,8 @@
+"""
+这个文件包含了所有的请求和响应的Pydantic模型
+供后续的API路由使用
+"""
+
 from pydantic import BaseModel
 from typing import Union, Annotated
 from fastapi.param_functions import Form
@@ -80,14 +85,8 @@ class Record(BaseModel):
     ID: int
     user_ID: int
     img_src: str
+    state: int
     result: Result
-
-
-class Upload(BaseModel):
-    """
-    fileData: str
-    """
-    fileData: str
 
 
 class LoginResponse(BaseResponse):
@@ -134,11 +133,9 @@ class UploadResponse(BaseResponse):
     """
     code: int
     message: str
-    data: {
-        result: Result
-    }
+    data: None
     """
-    data: Union[Result, None]
+    data: None
 
 
 class ExtendedOAuth2PasswordRequestForm:
