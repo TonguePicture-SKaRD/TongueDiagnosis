@@ -1,23 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import Check from "../views/Check.vue";
+import Login from "@/views/Login.vue";
+import Register from "@/views/Register.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/home',
       name: 'home',
-      component: HomeView
+      component: HomeView //首页
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      path: '/login',
+      name: 'login',
+      component: Login //登录界面
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register //登录界面
+    },
+    {
+      path: '/check',
+      name: 'check',
+      component: Check
+    },
+    {
+      path:'',
+      redirect:'/home' // 重定向，即最初路径为根路径时，立即重定向到/home路径
     }
-  ]
+  ],
 })
 
 export default router
