@@ -85,14 +85,8 @@ class Record(BaseModel):
     ID: int
     user_ID: int
     img_src: str
+    state: int
     result: Result
-
-
-class Upload(BaseModel):
-    """
-    fileData: str
-    """
-    fileData: str
 
 
 class LoginResponse(BaseResponse):
@@ -139,11 +133,9 @@ class UploadResponse(BaseResponse):
     """
     code: int
     message: str
-    data: {
-        result: Result
-    }
+    data: None
     """
-    data: Union[Result, None]
+    data: None
 
 
 class ExtendedOAuth2PasswordRequestForm:

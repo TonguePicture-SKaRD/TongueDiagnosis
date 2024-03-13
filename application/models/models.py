@@ -43,6 +43,7 @@ class TongueAnalysis(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('User.id'))
     img_src = Column(String(255))
+    state = Column(Integer)
     tongue_color = Column(Integer)
     coating_color = Column(Integer)
     tongue_thickness = Column(Integer)
