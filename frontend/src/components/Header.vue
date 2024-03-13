@@ -50,11 +50,11 @@ onBeforeMount(() => {
       @select="handleSelect"
   >
     <!--logo-->
-    <el-menu-item index="1"><h1><router-link to="/home">舌诊宝</router-link></h1></el-menu-item>
+    <router-link to="/home"><el-menu-item index="1" ><h1>舌诊宝</h1></el-menu-item></router-link>
     <!--导航栏-->
-    <el-menu-item index="2"><h3><router-link to="/home">首页</router-link></h3></el-menu-item>
-    <el-menu-item index="3"><h3><router-link to="/check">检测</router-link></h3></el-menu-item>
-    <el-menu-item index="4"><h3><router-link to="/home">其他</router-link></h3></el-menu-item>
+    <router-link to="/home"><el-menu-item index="2"><h3>首页</h3></el-menu-item></router-link>
+    <router-link to="/check"><el-menu-item index="3"><h3>检测</h3></el-menu-item></router-link>
+    <router-link to="/home"><el-menu-item index="4"><h3>其他</h3></el-menu-item></router-link>
   </el-menu>
   <!--用户logo,条件渲染-->
   <div class="user" v-if="isl == 0">
