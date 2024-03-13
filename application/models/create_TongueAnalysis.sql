@@ -5,6 +5,6 @@ CREATE TABLE TongueAnalysis (
     tongue_color INT,
     coating_color INT,
     tongue_thickness INT,
-    rot_greasy INT,
+    rot_greasy INT, state INT,
     FOREIGN KEY (user_id) REFERENCES User(id)
-);
+)
