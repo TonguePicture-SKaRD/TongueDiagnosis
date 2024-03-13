@@ -90,6 +90,6 @@ def upload(fileData: UploadFile,
 
 
     tongue_predictor = TonguePredictor()
-    result = tongue_predictor.predict(fileData.file)
+    result = tongue_predictor.predict(fileData.file,1,lambda **kwargs: print(kwargs))
 
     return result
