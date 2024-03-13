@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import router from '@/router'
 
 
 import { getCurrentInstance, onBeforeMount} from "vue";
@@ -9,32 +10,35 @@ let { proxy } = getCurrentInstance();
 
 // 检测当前页面并且正确显示黄线
 let a;
-const router = useRouter()
-console.log('router:',router.currentRoute.value.path);
-if (router.currentRoute.value.path == "/home") a = '2';
-if (router.currentRoute.value.path == "/check") a = '3';
+const routers = useRouter()
+console.log('router:',routers.currentRoute.value.path);
+if (routers.currentRoute.value.path == "/home") a = '2';
+if (routers.currentRoute.value.path == "/check") a = '3';
 const activeIndex = ref(a)
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
+  if (key == 1) router.push('./home');
+  if (key == 2) router.push('./home');
+  if (key == 3) router.push('./check');
+  if (key == 4) router.push('./home');
 }
 
-let isl;
+const isl = ref(1);
 onBeforeMount(() => {
   //调用方法
   proxy.$http
       .get("/user/info", {
       })
       .then(function(res) {
-        console.log(res.data)
-        isl = res.data.code;
-        console.log(isl);
+        console.log(res.data.code)
+        isl.value = res.data.code;
+        console.log(isl.value);
       })
       .catch(function(error) {
         console.log(error);
       });
 });
 </script>
-
 
 <template>
 <!--顶栏组件-->
@@ -50,11 +54,11 @@ onBeforeMount(() => {
       @select="handleSelect"
   >
     <!--logo-->
-    <router-link to="/home"><el-menu-item index="1" ><h1>舌诊宝</h1></el-menu-item></router-link>
+    <el-menu-item index="1" ><h1>舌诊宝</h1></el-menu-item>
     <!--导航栏-->
-    <router-link to="/home"><el-menu-item index="2"><h3>首页</h3></el-menu-item></router-link>
-    <router-link to="/check"><el-menu-item index="3"><h3>检测</h3></el-menu-item></router-link>
-    <router-link to="/home"><el-menu-item index="4"><h3>其他</h3></el-menu-item></router-link>
+    <el-menu-item index="2"><h3>首页</h3></el-menu-item>
+    <el-menu-item index="3"><h3>检测</h3></el-menu-item>
+    <el-menu-item index="4"><h3>其他</h3></el-menu-item>
   </el-menu>
   <!--用户logo,条件渲染-->
   <div class="user" v-if="isl == 0">
