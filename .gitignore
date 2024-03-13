@@ -3,3 +3,9 @@ venv
 frontend/node_modules
 __pycache__
 frontend/public/tongue
+/application/net/weights/rot_and_greasy.pth
+/application/net/weights/thickness.pth
+/application/net/weights/tongue_coat_color.pth
+/application/net/weights/tongue_color.pth
+/application/net/weights/unet.pth
+/application/net/weights/yolov5.pt

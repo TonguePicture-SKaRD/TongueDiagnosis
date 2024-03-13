@@ -10,7 +10,7 @@ from ..orm.database import get_db
 from ..orm import write_event, write_result, get_record_by_location
 from ..config import Settings
 
-from ..net import TonguePredictor
+from ..net.predict import TonguePredictor
 
 router_tongue_analysis = APIRouter()
 
@@ -51,6 +51,7 @@ async def upload(file_data: UploadFile,
     with open(file_location, "wb") as f:
         contents = await file_data.read()
         f.write(contents)
+    f.close()
 
     # 写入事件
     code = write_event(user_id=user.id, img_src=file_location, state=0, db=db)
