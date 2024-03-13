@@ -53,7 +53,6 @@ class TonguePredictor:
         :return:
         """
         predict_img = Image.open(img)
-        predict_img.show()
         # 舌体定位
         self.yolo.eval()
         with torch.no_grad():
@@ -82,7 +81,7 @@ class TonguePredictor:
             split_img = np.array(split_img)
             result = pred * split_img
 
-        result = np.transpose(result, (0, 3, 1, 2))
+        result = result.squeeze(0)
         result = self.resnet.predict(result)
 
         predict_result = {

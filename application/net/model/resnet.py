@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+from torchvision import transforms
 
 class BottleNeckDeep(nn.Module):
     """深层残差块"""
@@ -168,6 +168,7 @@ class ResNetPredictor:
 
         self.device = torch.device('cpu')
         self.nets = []
+        self.transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean=[0.29, 0.22, 0.23], std=[0.34, 0.27, 0.28])])
         for p in range(len(path)):
             net = ResNet50(tasks[p],True).to(self.device)
             net.load_state_dict(torch.load(path[p],map_location=self.device))
@@ -176,8 +177,9 @@ class ResNetPredictor:
 
 
     def predict(self,img):
-        img = torch.from_numpy(img)
-        img = img.to(torch.float32)
+
+        img = self.transform(img)
+        img = img.unsqueeze(0).to(self.device)
 
         result = []
         for net in self.nets:
