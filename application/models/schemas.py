@@ -1,3 +1,8 @@
+"""
+这个文件包含了所有的请求和响应的Pydantic模型
+供后续的API路由使用
+"""
+
 from pydantic import BaseModel
 from typing import Union, Annotated
 from fastapi.param_functions import Form

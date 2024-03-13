@@ -1,3 +1,7 @@
+"""
+定义数据库模型
+"""
+
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
