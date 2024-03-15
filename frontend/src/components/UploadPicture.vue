@@ -2,8 +2,9 @@
   <el-upload
       class="upload-demo"
       drag
-      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
       multiple
+      :on-change="PicOnLoad"
+      :http-request="handleSuccess"
   >
     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
     <div class="el-upload__text">
@@ -19,9 +20,26 @@
 
 <script setup lang="ts">
 import { UploadFilled } from '@element-plus/icons-vue'
-import {UploadFile} from "element-plus";
+import axios from "axios";
 
-type UploadFiles = UploadFile[]
+
+
+let e;
+function PicOnLoad(file){
+  e = file
+}
+
+async function handleSuccess(event){
+  let formData = new FormData()
+  formData.append('file_data',e.raw)
+  axios.post('http://127.0.0.1:5000/api/model/upload',formData,{
+    headers:{
+      'Content-Type':'multipart/form-data'
+    }
+  }).then(res=>{
+    console.log(res)
+  })
+}
 </script>
 
 <style>

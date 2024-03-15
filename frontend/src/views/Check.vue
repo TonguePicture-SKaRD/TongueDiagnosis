@@ -3,6 +3,7 @@
  import Upload from "@/components/UploadPicture.vue"
  import Result from "@/components/Result.vue";
  import Carousel from "@/components/Carousel.vue";
+ import Steps from "@/components/Steps.vue";
 </script>
 
 <template>
@@ -10,6 +11,7 @@
   <Carousel class="carousel"></Carousel>
   <div class="feature"><h2><br>上传图片</h2></div>
   <Upload class="upload"></Upload>
+  <Steps></Steps>
   <div class="result">
     <h2><br>测试结果查看</h2>
   </div>
@@ -18,7 +20,7 @@
 
 <style>
 body {
-  background-color: #fffef6;
+  background-color: #FAFAFA;
 }
 .header {
   position: relative;
