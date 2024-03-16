@@ -1,6 +1,6 @@
 
 <template>
-    <div class="common-layout">
+    <!-- <div class="common-layout">
     <el-container>
       <el-header><Header class="header"></Header></el-header>
       <el-container>
@@ -8,9 +8,11 @@
         <el-main><Registerblock/></el-main>
       </el-container>
     </el-container>
-  </div>
+  </div> -->
     <!-- <Header class="header"></Header> -->
-    <h1>这是register页面</h1>
+
+    <Register_Login/>
+
     
 </template>
 
@@ -19,11 +21,12 @@
  import { RouterLink, RouterView } from 'vue-router'
  import Header from "@/components/Header.vue";
  import Registerblock from '@/components/Registerblock.vue';
+ import Register_Login from '@/components/Register_Login.vue';
 
 
 
 </script>
 
-<style scoped>
+<style>
 
 </style>

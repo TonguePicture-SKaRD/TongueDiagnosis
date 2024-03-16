@@ -1,22 +1,26 @@
 <template>
-    <h2>这是login表单</h2>
-    <el-form ref="Email_Password_login" style="max-width: 300px" :model="user" status-icon :rules="rules"
-        label-width="auto" class="Email_Password_form" v-loading="loading">
+    <!-- <h2>这是login表单</h2> -->
+    <el-form ref="Email_Password_login" style="max-width: 210px" :model="user" status-icon :rules="rules"
+        label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="rgba(122, 122, 122, 0.8)">
 
-        <el-form-item label="Email" prop="Email">
-            <el-input v-model="user.Email" placeholder="请输入邮箱" id="l_email" :prefix-icon="Avatar" />
+        <el-form-item label="" prop="Email">
+            <el-input v-model="user.Email" placeholder="请输入邮箱" id="l_email" :prefix-icon="Avatar" size="large" />
         </el-form-item>
 
-        <el-form-item label="Password" prop="Password">
-            <el-input v-model="user.Password" placeholder="请输入6~20位字母数字组合" id="l_password" type="password"
-                show-password :prefix-icon="Key" />
+        <el-form-item label="" prop="Password">
+            <el-input v-model="user.Password" placeholder="请输入密码" id="l_password" type="password" show-password
+                :prefix-icon="Key" size="large" />
             <br>
-            <div v-show="not_register">尚未注册？<router-link to='/register'>注册</router-link></div>
+            <!-- <div v-show="not_register">尚未注册？<router-link to='/register'>注册</router-link></div> -->
         </el-form-item>
 
         <el-form-item>
-            <el-button type="primary" @click="login(Email_Password_login)">登录</el-button>
-            <el-button @click="reset(Email_Password_login)">重置</el-button>
+            <el-button class="reset_l" @click="reset(Email_Password_login)" round>重置</el-button>
+            <br>
+            <el-button class="login_b" type="primary" @click="login(Email_Password_login)" size="large">登录</el-button>
+
+
+
         </el-form-item>
 
     </el-form>
@@ -40,11 +44,15 @@ const validatePassword = (rule: any, value: any, callback: any) => {
     if (value === '') {
         callback(new Error('请输入密码'))
     } else {
-        const pattern = /^[a-zA-Z0-9]{6,20}$/;
-        if (pattern.test(value)) {
-            callback()
+        const pattern = /^[a-zA-Z0-9]+$/;
+        if (value.length < 6) {
+            callback(new Error('密码过短'))
         } else {
-            callback(new Error('密码不合规范'))
+            if (value.length > 20) {
+                callback(new Error('密码过长'))
+            } else {
+                callback()
+            }
         }
     }
 }
@@ -107,7 +115,7 @@ import axios from 'axios';
 
 
 
-const generate_form=()=>{
+const generate_form = () => {
     let dataform = new FormData()
     dataform.append('email', user.Email)
     dataform.append('password', user.Password)
@@ -120,7 +128,7 @@ const set_Login_put = () => {
         method: 'put',
         data: generate_form(),
         url: './user/login',
-        timeout:5000
+        timeout: 5000
     })
         .then(response => {
             loading.value = false
@@ -182,15 +190,15 @@ const analyze_response = (data: any) => {
     }
 }
 
-const deliver_token=(t:string)=>{
-    console.log("t:",t) //
+const deliver_token = (t: string) => {
+    console.log("t:", t) //
     localStorage.setItem('token', t);
 }
 
-function jump_home(seconds:any) {
-  setTimeout(function() {
-    router.push('./home')
-  }, seconds * 1000); 
+function jump_home(seconds: any) {
+    setTimeout(function () {
+        router.push('./home')
+    }, seconds * 1000);
 }
 
 
@@ -203,4 +211,21 @@ import { watchEffect } from 'vue'
 import { Avatar, Key, Checked } from '@element-plus/icons-vue'
 </script>
 
-<style scoped></style>
+<style scoped>
+.login_b {
+    width: 100%;
+    margin-top: 35px;
+    /* background-color: #f6f6f6;
+    outline: none;
+    border-radius: 8px;
+    padding: 13px;
+    color: #0b51de;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;  */
+}
+
+.reset_l {
+    justify-content: flex-end;
+}
+</style>

@@ -1,7 +1,6 @@
 <template>
     <!-- <Header class="header"></Header> -->
-    <h1>这是login页面</h1>
-    <Loginblock/>
+    <Register_Login/>
 </template>
 
 
@@ -9,6 +8,7 @@
  import { RouterLink, RouterView } from 'vue-router'
  import Header from "@/components/Header.vue";
  import Loginblock from '@/components/Loginblock.vue';
+ import Register_Login from '@/components/Register_Login.vue';
 
 
 

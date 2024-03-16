@@ -1,34 +1,37 @@
 <template>
-    <h2>这是表单</h2>
-    <el-form ref="Email_Password_register" style="max-width: 300px" :model="user" status-icon :rules="rules"
-        label-width="auto" class="Email_Password_form" v-loading="loading">
+    <!-- <h2>这是表单</h2> -->
+    <el-form ref="Email_Password_register" style="max-width: 210px" :model="user" status-icon :rules="rules"
+        label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="rgba(122, 122, 122, 0.8)">
 
-        <el-form-item label="Email" prop="Email">
-            <el-input v-model="user.Email" placeholder="请输入邮箱" id="r_email" :prefix-icon="Avatar" />
+        <el-form-item label="" prop="Email">
+            <el-input v-model="user.Email" placeholder="请输入邮箱" id="r_email" :prefix-icon="Avatar" size="large"/>
         </el-form-item>
 
-        <el-form-item label="Password" prop="Password">
+        <el-form-item label="" prop="Password">
             <el-input v-model="user.Password" placeholder="请输入6~20位字母数字组合" id="r_password" type="password"
-                show-password :prefix-icon="Key" />
+                show-password :prefix-icon="Key" size="large"/>
         </el-form-item>
 
-        <el-form-item label="CheckPassword" prop="checkPassword">
+        <el-form-item label="" prop="checkPassword">
             <el-input v-model="user.checkPassword" placeholder="请确认密码" id="r_cpassword" type="password" show-password
-                :prefix-icon="Checked" />
+                :prefix-icon="Checked" size="large"/>
             <br>
-            <router-link to='/login' v-show="finish_register">跳转至登录页面</router-link>
+            <!-- <router-link to='/login' v-show="finish_register">跳转至登录页面</router-link> -->
         </el-form-item>
 
         <el-form-item>
-            <el-button type="primary" @click="register(Email_Password_register)">注册</el-button>
-            <el-button @click="reset(Email_Password_register)">重置</el-button>
+            <el-button class="reset_r" @click="reset(Email_Password_register)" size="small" round>重置</el-button>
+            <br>
+            <el-button class="register_b" type="primary" @click="register(Email_Password_register)" size="large">注册</el-button>
+    
+            
         </el-form-item>
 
     </el-form>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, h } from 'vue'
+import { reactive, ref, provide } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { RouterLink, RouterView } from 'vue-router'
 
@@ -40,13 +43,21 @@ let finish_register=ref<boolean>(false)
 
 const validatePassword = (rule: any, value: any, callback: any) => {
     if (value === '') {
-        callback(new Error('请输入密码'))
+        callback(new Error('请设置密码'))
     } else {
-        const pattern =/^[a-zA-Z0-9]{6,20}$/;
-        if (pattern.test(value)) {
-            callback()
+        const pattern = /^[a-zA-Z0-9]+$/;
+        if (value.length < 6) {
+            callback(new Error('密码过短'))
         } else {
-            callback(new Error('密码不合规范'))
+            if (value.length > 20) {
+                callback(new Error('密码过长'))
+            } else {
+                if (pattern.test(value)) {
+                    callback()
+                } else {
+                    callback(new Error('请不要使用特殊字符'))
+                }
+            }
         }
     }
 }
@@ -119,6 +130,7 @@ const reset = (formEl: FormInstance | undefined) => {
 }
 
 
+
 import axios from 'axios';
 
 const set_Register_post = () => {
@@ -169,7 +181,7 @@ const analyze_response = (data: any) => {
 
         finish_register.value=true
 
-        jump_login(2) //等待2s后跳转
+        jump_login(1) //等待1s后跳转
     } else {
         if (data.code === 101) {
             fail_message("此账号已被注册")
@@ -182,7 +194,7 @@ const analyze_response = (data: any) => {
 //等待
 function jump_login(seconds) {
   setTimeout(function() {
-    router.push('./login')
+    location.reload()
   }, seconds * 1000); 
 }
 
@@ -190,10 +202,37 @@ function jump_login(seconds) {
 //     router.push('./login')
 // }
 
+
+
+
 //原代码
 import { watchEffect } from 'vue'
 import { Avatar, Key, Checked } from '@element-plus/icons-vue'
 import router from '@/router';
 </script>
 
-<style scoped></style>
+<style scoped>
+.register_b {
+    width: 100%;
+    margin-top: 35px; 
+    /* background-color: #f6f6f6;
+    outline: none;
+    border-radius: 8px;
+    padding: 13px;
+    color: #0b51de;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;  */
+}
+
+/* .register_b:hover {
+    background-color: #a262ad;
+    color: #f6f6f6;
+    transition: background-color 0.5s ease;
+} */
+
+
+.reset_r{
+    justify-content: flex-end;
+}
+</style>
