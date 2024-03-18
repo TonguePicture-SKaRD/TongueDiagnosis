@@ -5,6 +5,8 @@ import torchvision
 from PIL import Image
 import numpy as np
 
+from yolov5 import load
+
 from application.net.model.unet import UNet
 from application.net.model.resnet import ResNetPredictor
 
@@ -33,7 +35,7 @@ class TonguePredictor:
         self.device = torch.device('cpu')
 
         # yolov5模型
-        self.yolo = torch.hub.load('application/net/yolov5', 'custom', path=yolo_path, source='local').to(self.device)
+        self.yolo = load(yolo_path, device='cpu')
 
         # unet模型
         self.unet = UNet()
