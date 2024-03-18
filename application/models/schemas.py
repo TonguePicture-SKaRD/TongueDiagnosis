@@ -69,10 +69,10 @@ class Result(BaseModel):
     tongue_thickness: int
     rot_greasy: int
     """
-    tongue_color: int
-    coating_color: int
-    tongue_thickness: int
-    rot_greasy: int  
+    tongue_color: Optional[int] = None
+    coating_color: Optional[int] = None
+    tongue_thickness: Optional[int] = None
+    rot_greasy: Optional[int] = None
 
 
 class Record(BaseModel):
@@ -85,7 +85,7 @@ class Record(BaseModel):
     ID: int
     user_ID: int
     img_src: str
-    state: Optional[int] = None
+    state: int = None
     result: Optional[Result] = None
 
 
