@@ -1,34 +1,22 @@
-<template>
-  <ul v-infinite-scroll="load" class="infinite-list" style="overflow: auto">
-    <li v-for="i in count" :key="i" class="infinite-list-item">{{ i }}</li>
-  </ul>
-</template>
+<script setup>
+  import axios from "axios";
 
-<script lang="ts" setup>
-import { ref } from 'vue'
-const count = ref(0)
-const load = () => {
-  count.value += 2
-}
+  let record = ref(0);
+  async function handleClick(event){
+    axios.get('http://127.0.0.1:5000/api/user/record',{
+    }).then(res=>{
+      console.log(res)
+      console.log(res.data)
+      record = res.data
+    }).catch(error=>{
+      console.log(error)
+    })
+  }
+  let len = record.length
+  let state = record[len].state
+  const postFontSize = state
 </script>
+<template>
+  <button @click="handleClick">215654</button>
 
-<style>
-.infinite-list {
-  height: 300px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-.infinite-list .infinite-list-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 160px;
-  background: var(--el-color-primary-light-9);
-  margin: 10px;
-  color: var(--el-color-primary);
-}
-.infinite-list .infinite-list-item + .list-item {
-  margin-top: 10px;
-}
-</style>
+</template>

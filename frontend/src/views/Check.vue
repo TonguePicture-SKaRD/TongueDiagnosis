@@ -1,17 +1,15 @@
 <script setup>
  import Header from "@/components/Header.vue";
- import Upload from "@/components/UploadPicture.vue"
  import Result from "@/components/Result.vue";
  import Carousel from "@/components/Carousel.vue";
- import Steps from "@/components/Steps.vue";
+ import TotalUpload from "@/components/TotalUpload.vue";
 </script>
 
 <template>
   <Header class="header"></Header>
   <Carousel class="carousel"></Carousel>
   <div class="feature"><h2><br>上传图片</h2></div>
-  <Upload class="upload"></Upload>
-  <Steps></Steps>
+  <TotalUpload class="upload"></TotalUpload>
   <div class="result">
     <h2><br>测试结果查看</h2>
   </div>
