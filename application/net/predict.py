@@ -146,6 +146,3 @@ class TonguePredictor:
                 img.close()
 
 
-if __name__ == '__main__':
-    predictor = TonguePredictor()
-    predictor.predict(r'E:\Projects\deeplearning\train_example\data\old\WIN_20240305_18_54_18_Pro.jpg')
