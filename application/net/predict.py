@@ -58,18 +58,32 @@ class TonguePredictor:
         predict_img = Image.open(img)
         # 舌体定位
         self.yolo.eval()
+        print("舌体定位")
         with torch.no_grad():
             pred = self.yolo(predict_img)
-        if len(pred.xyxy) == 0:
+        if len(pred.xyxy[0]) < 1:
             # 图片不合法
-            fun(event_id=record_id, code=201)
+            fun(event_id=record_id,
+                tongue_color=None,
+                coating_color=None,
+                tongue_thickness=None,
+                rot_greasy=None,
+                code=201)
+            print("图片不合法，没舌头")
             return
-        elif len(pred.xyxy) > 1:
+        elif len(pred.xyxy[0]) > 1:
             # 图片不合法
-            fun(event_id=record_id, code=202)
+            fun(event_id=record_id,
+                tongue_color=None,
+                coating_color=None,
+                tongue_thickness=None,
+                rot_greasy=None,
+                code=202)
+            print("图片不合法，舌头太多了")
             return
         # 舌体分割
         self.unet.eval()
+        print("舌体分割")
         with torch.no_grad():
             x1, y1, x2, y2 = (
                 pred.xyxy[0][0, 0].item(), pred.xyxy[0][0, 1].item(), pred.xyxy[0][0, 2].item(),
@@ -87,6 +101,7 @@ class TonguePredictor:
 
         result = result.squeeze(0)
         result = self.resnet.predict(result)
+        print("舌体分析")
 
         predict_result = {
             "code": 0,
@@ -136,6 +151,3 @@ class TonguePredictor:
                 img.close()
 
 
-if __name__ == '__main__':
-    predictor = TonguePredictor()
-    predictor.predict(r'E:\Projects\deeplearning\train_example\data\old\WIN_20240305_18_54_18_Pro.jpg')
