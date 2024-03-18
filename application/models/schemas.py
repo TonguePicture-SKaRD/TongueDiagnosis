@@ -4,7 +4,7 @@
 """
 
 from pydantic import BaseModel
-from typing import Union, Annotated
+from typing import Union, Annotated, Optional
 from fastapi.param_functions import Form
 
 
@@ -85,8 +85,8 @@ class Record(BaseModel):
     ID: int
     user_ID: int
     img_src: str
-    state: int
-    result: Result
+    state: Optional[int] = None
+    result: Optional[Result] = None
 
 
 class LoginResponse(BaseResponse):

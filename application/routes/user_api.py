@@ -138,6 +138,7 @@ def record_get(user: schemas.UserBase = Depends(get_current_user), db: Session =
                 ID=record.id,
                 user_ID=record.user_id,
                 img_src=record.img_src,
+                state=record.state,
                 result=schemas.Result(
                     tongue_color=record.tongue_color,
                     coating_color=record.coating_color,
