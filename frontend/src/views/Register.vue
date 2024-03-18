@@ -18,15 +18,18 @@
 
 
 <script setup lang="ts" name="Register">
- import { RouterLink, RouterView } from 'vue-router'
- import Header from "@/components/Header.vue";
- import Registerblock from '@/components/Registerblock.vue';
+//  import { RouterLink, RouterView } from 'vue-router'
+//  import Header from "@/components/Header.vue";
+//  import Registerblock from '@/components/Registerblock.vue';
  import Register_Login from '@/components/Register_Login.vue';
 
 
 
 </script>
 
-<style>
+<style scoped>
+body{
+  background: linear-gradient(200deg, #f3e7e9, #e3eeff);
+}
 
 </style>

@@ -1,7 +1,7 @@
 <template>
     <!-- <h2>这是login表单</h2> -->
     <el-form ref="Email_Password_login" style="max-width: 210px" :model="user" status-icon :rules="rules"
-        label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+        label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#d3b7d8">
 
         <el-form-item label="" prop="Email">
             <el-input v-model="user.Email" placeholder="请输入邮箱" id="l_email" :prefix-icon="Avatar" size="large" />
@@ -94,11 +94,11 @@ const login = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     formEl.validate((valid) => {
         if (valid) {
-            console.log('submit!')
+            // console.log('submit!')
             loading.value = true
             set_Login_put()
         } else {
-            console.log('error submit!')
+            // console.log('error submit!')
             fail_message("请按要求填写")
             return false
         }
@@ -133,7 +133,7 @@ const set_Login_put = () => {
         .then(response => {
             loading.value = false
             analyze_response(response.data)
-            console.log("成功")
+            // console.log("成功")
 
         })
         .catch(error => {
@@ -175,7 +175,7 @@ const analyze_response = (data: any) => {
         token = data.data.token
         deliver_token(token)
         jump_home(1)
-        console.log(token) //
+        // console.log(token) 
     } else {
         if (data.code === 101) {
             fail_message("用户不存在")
@@ -191,7 +191,7 @@ const analyze_response = (data: any) => {
 }
 
 const deliver_token = (t: string) => {
-    console.log("t:", t) //
+    // console.log("t:", t) //
     localStorage.setItem('token', t);
 }
 

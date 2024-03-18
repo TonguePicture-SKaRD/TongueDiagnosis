@@ -1,14 +1,14 @@
 <template>
     <!-- <h2>这是表单</h2> -->
     <el-form ref="Email_Password_register" style="max-width: 210px" :model="user" status-icon :rules="rules"
-        label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+        label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#d3b7d8">
 
         <el-form-item label="" prop="Email">
             <el-input v-model="user.Email" placeholder="请输入邮箱" id="r_email" :prefix-icon="Avatar" size="large"/>
         </el-form-item>
 
         <el-form-item label="" prop="Password">
-            <el-input v-model="user.Password" placeholder="请输入6~20位字母数字组合" id="r_password" type="password"
+            <el-input v-model="user.Password" placeholder="请设置密码" id="r_password" type="password"
                 show-password :prefix-icon="Key" size="large"/>
         </el-form-item>
 
@@ -112,12 +112,12 @@ const register = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     formEl.validate((valid) => {
         if (valid) {
-            console.log('submit!')
+            // console.log('submit!')
 
             set_Register_post()
             loading.value = true
         } else {
-            console.log('error submit!')
+            // console.log('error submit!')
             fail_message("请按要求填写")
             return false
         }

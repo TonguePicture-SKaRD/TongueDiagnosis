@@ -1,8 +1,8 @@
 <template>
-    <div class="back-ground">
+    <div class="back_ground">
         <div class="center-container">
             <div class="container">
-                <div class="form-box" :style="refstyle">
+                <div class="form-box" :style="refstyle" v-loading=loading_tip element-loading-background="#d3b7d8">
 
                     <div class="register-box" v-show=show_change>
                         <h1>register</h1>
@@ -37,31 +37,45 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
 import Registerblock from '@/components/Registerblock.vue';
 import Loginblock from './Loginblock.vue';
-import { ref,inject,watch } from 'vue'
+import { ref } from 'vue'
 
 
 let slide_tip = false
 let refstyle = ref({
     transform: 'translateX(0%)'
 })
-let show_change = false
-let receivedMessage = inject('message', ref(''));
+let show_change = ref(false)
+let loading_tip = ref(false)
+let useless = true
 
-watch(receivedMessage.value, (newValue, oldValue) => {
-  console.log(`Counter 改变了：${oldValue} -> ${newValue}`);
-});
 
+
+function loading_seconds(seconds) {
+    setTimeout(function () {
+        loading_tip.value = false
+    }, seconds * 1000);
+}
+
+function waiting_change(seconds) {
+    setTimeout(function () {
+        show_change.value = !show_change.value
+    }, seconds * 1000)
+}
 
 const change_style = () => {
-    show_change = !show_change
+    loading_tip.value = true
+    waiting_change(0.2)
+
+    //show_change = !show_change
     slide_tip = !slide_tip
     refstyle.value.transform = slide_tip ? 'translateX(80%)' : 'translateX(0%)'
+
+    loading_seconds(0.4)
 }
 
 </script>
@@ -74,22 +88,14 @@ const change_style = () => {
     align-items: center;
     /* 垂直居中 */
     height: 100vh;
-
-}
-
-body {
-    /* 100%窗口高度 */
-    height: 100vh;
-    /* 弹性布局 水平+垂直居中 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* 渐变背景 */
+    width: '100%';
+    height: '100%';
     background: linear-gradient(200deg, #f3e7e9, #e3eeff);
+
 }
 
 .container {
-    background-color: #fff;
+    background-color: #ffffff;
     width: 650px;
     height: 415px;
     border-radius: 5px;
@@ -206,12 +212,4 @@ h1 {
     color: #fff;
 }
 
-.background {
-  background-color: #405ba0; /* 设置背景颜色 */
-  width: 100%; /* 宽度占满整个屏幕 */
-  height: 100vh; /* 高度占满整个屏幕 */
-  display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-}
 </style>
