@@ -28,7 +28,7 @@ let e;
 function PicOnLoad(file){
   e = file
 }
-
+let upstate = 0;
 async function handleSuccess(event){
   let formData = new FormData()
   formData.append('file_data',e.raw)
@@ -38,6 +38,7 @@ async function handleSuccess(event){
     }
   }).then(res=>{
     console.log(res)
+    upstate = 1;
   })
 }
 </script>
