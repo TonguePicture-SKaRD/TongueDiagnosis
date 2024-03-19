@@ -8,3 +8,4 @@ class Settings:
     SECRET_KEY: str = "f2e1f1b1c1a1"
     ALGORITHMS: str = "HS256"
     IMG_PATH: str = "frontend/public/tongue"
+    IMG_DB_PATH: str = "tongue"
