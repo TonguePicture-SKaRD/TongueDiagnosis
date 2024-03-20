@@ -3,6 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 import App from './App.vue'
 import router from './router'
@@ -10,9 +11,11 @@ import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+let token = localStorage.getItem('token');
+
 axios.defaults.baseURL = 'http://127.0.0.1:5000/api';
 axios.defaults.headers = {
-    Authorization:"Bearer "+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MywiZW1haWwiOiIxMjM0NTZAcXEuY29tIiwiZXhwIjoxNzEwODUyNzYyfQ.oZ7fMhSJOOx7ZyXuxsTjp4ceDSSRA3MR2C6WGXr9A_E"
+    Authorization:"Bearer " + token
 }
 
 const app = createApp(App)

@@ -7,6 +7,10 @@ import { RouterLink, RouterView } from 'vue-router'
   <router-view></router-view>
 </template>
 
-<style scoped>
-
+<style>
+#app{
+  height: 100%;
+  margin:0;
+  padding: 0
+}
 </style>

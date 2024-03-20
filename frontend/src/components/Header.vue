@@ -24,10 +24,14 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 const isl = ref(1);
+let token = localStorage.getItem('token');
 onBeforeMount(() => {
   //调用方法
   proxy.$http
       .get("/user/info", {
+        headers:{
+          "Authorization":"Bearer " + token
+        }
       })
       .then(function(res) {
         console.log(res.data.code)
