@@ -8,7 +8,7 @@
         border
     >
       <el-descriptions-item label="图片">
-        <el-tag size="small"><router-link to=item.img_src>点击查看</router-link></el-tag>
+        <el-tag size="small"><router-link :to=item.img_src>点击查看</router-link></el-tag>
       </el-descriptions-item>
       <el-descriptions-item label="检测结果"
       >{{color[item.result.tongue_color]}}，{{outcolor[item.result.coating_color]}}，{{rot[item.result.rot_greasy]}}，{{thick[item.result.tongue_thickness]}}
@@ -49,7 +49,7 @@
     }
     return arr;
   }
-  let rec;
+  let rec = ref([]);
   onMounted(function () {
     const timer = window.setInterval(() => {
       setTimeout(function () {
@@ -57,17 +57,17 @@
         })
         .then(function(res) {
           console.log(res.data)
-          rec = res.data.data
-          reverseArray1(rec)
-          console.log(rec)
-          console.log(rec[1].state)
+          rec.value = res.data.data
+          reverseArray1(rec.value)
+          console.log(rec.value)
+          console.log(rec.value[1].state)
         })
         .catch(function(error) {
           console.log(error);
         })
         .then(res => {
           //视情况而定
-          if (rec[1].state === 1) {
+          if (rec.value[0].state === 1) {
             // 这里可以写一些中止轮询的条件 比如code值返回0时
             clearInterval(timer)
           }

@@ -22,7 +22,7 @@
 import { UploadFilled } from '@element-plus/icons-vue'
 import axios from "axios";
 
-
+const props = defineProps(['isupload'])
 
 let e;
 function PicOnLoad(file){
@@ -39,6 +39,8 @@ async function handleSuccess(event){
   }).then(res=>{
     console.log(res)
     upstate = 1;
+    console.log(props.isupload)
+    props.isupload = 1
   })
 }
 </script>

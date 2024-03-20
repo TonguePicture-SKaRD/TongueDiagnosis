@@ -12,7 +12,7 @@ import VueAxios from 'vue-axios'
 
 axios.defaults.baseURL = 'http://127.0.0.1:5000/api';
 axios.defaults.headers = {
-    Authorization:"Bearer "+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MywiZW1haWwiOiIxMjM0NTZAcXEuY29tIiwiZXhwIjoxNzEwODM5MjM0fQ.FQ-0ZECBO9PvavaFfJXxZHeIbkvEVHt72xLfd8h6TWU"
+    Authorization:"Bearer "+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MywiZW1haWwiOiIxMjM0NTZAcXEuY29tIiwiZXhwIjoxNzEwODUyNzYyfQ.oZ7fMhSJOOx7ZyXuxsTjp4ceDSSRA3MR2C6WGXr9A_E"
 }
 
 const app = createApp(App)
