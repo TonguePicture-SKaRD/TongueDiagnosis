@@ -35,7 +35,7 @@ import router from '@/router';
 
 const Email_Password_login = ref<FormInstance>() //表单ref属性
 let loading = ref(false)
-let token = ref('')
+let token = ''
 let not_register = ref<boolean>(false)
 let timeout = 50000//超时
 

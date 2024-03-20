@@ -6,6 +6,10 @@
 
                     <div class="register-box" v-show=show_change>
                         <h1>register</h1>
+                        <!-- <el-divider> -->
+                            <!-- <el-icon color="#ffff"><CirclePlusFilled /></el-icon> -->
+                            <!-- <br> -->
+                        <!-- </el-divider> -->
                         <Registerblock />
 
                     </div>
@@ -40,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { StarFilled,CirclePlusFilled } from '@element-plus/icons-vue'
 import Registerblock from '@/components/Registerblock.vue';
 import Loginblock from './Loginblock.vue';
 import { ref } from 'vue'
@@ -48,6 +53,9 @@ import { ref } from 'vue'
 let slide_tip = false
 let refstyle = ref({
     transform: 'translateX(0%)'
+})
+let kf=ref({
+    'background-color': "#d3b7d8"
 })
 let show_change = ref(false)
 let loading_tip = ref(false)
@@ -81,7 +89,7 @@ const change_style = () => {
 </script>
 
 <style scoped>
-.center-container {
+.c0enter-container {
     display: flex;
     justify-content: center;
     /* 水平居中 */
@@ -90,7 +98,7 @@ const change_style = () => {
     height: 100vh;
     width: '100%';
     height: '100%';
-    background: linear-gradient(200deg, #f3e7e9, #e3eeff);
+    background: linear-gradient(200deg, #f3e7e9, #cddffa);
 
 }
 
@@ -211,5 +219,4 @@ h1 {
     background-color: #d3b7d8;
     color: #fff;
 }
-
 </style>
