@@ -20,27 +20,41 @@
 
 <script setup lang="ts">
 import { UploadFilled } from '@element-plus/icons-vue'
+import {defineEmits} from 'vue'
 import axios from "axios";
+import {ref} from "vue";
+import { ElMessage } from 'element-plus'
+// const props = defineProps(['isupload'])
+const emit = defineEmits(["test"])
 
-const props = defineProps(['isupload'])
-
-let e;
+let e;//这个是上传图片的文件
 function PicOnLoad(file){
   e = file
 }
-let upstate = 0;
 async function handleSuccess(event){
   let formData = new FormData()
   formData.append('file_data',e.raw)
   axios.post('http://127.0.0.1:5000/api/model/upload',formData,{
     headers:{
-      'Content-Type':'multipart/form-data'
+      'Content-Type':'multipart/form-data',
+      'Authorization':'Bearer ' + localStorage.getItem('token')
     }
   }).then(res=>{
-    console.log(res)
-    upstate = 1;
-    console.log(props.isupload)
-    props.isupload = 1
+    console.log("图像上传成功")
+    emit("test",true)
+    // props.isupload = 1
+    ElMessage({
+      showClose: true,
+      message: '上传成功，请等待约30秒',
+      type: 'success',
+    })
+  }).catch(error => {
+    console.log(error)
+    ElMessage({
+      showClose: true,
+      message: '图片上传失败，请确认网络环境',
+      type: 'error',
+    })
   })
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="card" v-for="item in rec" :key="rec.id">
+  <div class="card" v-for="item in rec" :key="rec.id" v-if="isEmpty === true">
     <el-descriptions
         title="Result"
         direction="vertical"
@@ -7,18 +7,44 @@
         :size="size"
         border
     >
-      <el-descriptions-item label="图片">
-        <el-tag size="small"><router-link :to=item.img_src>点击查看</router-link></el-tag>
+      <el-descriptions-item label="图片"  width="450px">
+        <el-tag size="small"><a :href=item.img_src>点击查看</a></el-tag>
       </el-descriptions-item>
-      <el-descriptions-item label="检测结果"
-      >{{color[item.result.tongue_color]}}，{{outcolor[item.result.coating_color]}}，{{rot[item.result.rot_greasy]}}，{{thick[item.result.tongue_thickness]}}
+      <el-descriptions-item label="检测结果" v-if="item.state === 0">
+        检测中，请稍等
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 1">
+        {{color[item.result.tongue_color]}}，{{outcolor[item.result.coating_color]}}，{{rot[item.result.rot_greasy]}}，{{thick[item.result.tongue_thickness]}}
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 201">
+        未检测到舌象，请重新上传清晰舌象
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 202">
+        出现多个舌象，请重新拍照上传
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 203">
+        网络出现问题，请重新上传清晰舌象
       </el-descriptions-item>
     </el-descriptions>
   </div>
+  <div v-else><h1 class="nores">暂无检测结果</h1></div>
 </template>
+
+<style>
+ .nores {
+   text-align: center;
+   color: #00bd7e;
+ }
+</style>
+
 <script setup>
   import axios from "axios";
-  import { ref, onMounted } from 'vue'
+  import {ref, onMounted, defineEmits, defineProps} from 'vue'
+
+  const emit = defineEmits(["getRecord"])
+
+
+  const props = defineProps(['isupstate'])
 
   const color = {
     [0]: "淡白舌",
@@ -49,35 +75,67 @@
     }
     return arr;
   }
-  let rec = ref([]);
+  let rec = ref([0]);
+  let isEmpty = ref(false)
+
+  //不做轮询，在onmountED就先get一遍record
   onMounted(function () {
-    const timer = window.setInterval(() => {
-      setTimeout(function () {
-        axios.get("/user/record", {
-        })
-        .then(function(res) {
-          console.log(res.data)
-          rec.value = res.data.data
-          reverseArray1(rec.value)
-          console.log(rec.value)
-          console.log(rec.value[1].state)
-        })
-        .catch(function(error) {
+      axios.get("/user/record", {
+        headers:{
+          'Authorization':'Bearer ' + localStorage.getItem('token')
+        }
+      }).then(res=> {
+        rec.value = res.data.data
+        console.log(rec.value)
+          if(Object.keys(rec.value).length !== 0) {
+            console.log('rec is not null')
+            isEmpty.value = true
+            reverseArray1(rec.value)
+          }
+      }).catch(error=> {
           console.log(error);
         })
-        .then(res => {
-          //视情况而定
-          if (rec.value[0].state === 1) {
-            // 这里可以写一些中止轮询的条件 比如code值返回0时
-            clearInterval(timer)
+  })
+
+  onMounted(function () {
+      const timer = window.setInterval(() => {
+        setTimeout(function () {
+          console.log(("开始轮询"))
+          console.log(props.isupstate)
+          if (props.isupstate === true) {
+            console.log(("开始轮询加上向后端发送请求"))
+            axios.get("/user/record", {
+              headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              }
+            })
+                .then(function (res) {
+                  console.log(res.data)
+                  rec.value = res.data.data
+                  reverseArray1(rec.value)
+                  console.log(rec.value)
+                  console.log(rec.value[1].state)
+                  if (Object.keys(rec.value).length !== 0) {
+                    console.log('rec is not null')
+                    isEmpty.value = true
+                  }
+                })
+                .catch(function (error) {
+                  console.log(error);
+                })
+                .then(res => {
+                  //视情况而定
+                  if (rec.value[0].state === 1 || rec.value === []) {
+                    // 这里可以写一些中止轮询的条件 比如code值返回0时
+                    console.log("轮询停止")
+                    emit("getRecord", false)
+                    clearInterval(timer)
+                  }
+                })
           }
-        })
-      }, 0)
-    }, 2000)
-    // 清除定时器
-    // this.$once('hook:beforeDestroy', () => {
-    //   clearInterval(timer)
-    // })
+        }, 0)
+      }, 2000)
   });
+
 
 </script>

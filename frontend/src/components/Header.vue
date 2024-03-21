@@ -73,7 +73,7 @@ onBeforeMount(() => {
   </div>
   <div class="nouser" v-else>
     <ul>
-      <li><h3><router-link to="/login">登录</router-link></h3></li>
+      <li><h3><router-link to="/register">登录</router-link></h3></li>
       <li><h3><router-link to="/register">注册</router-link></h3></li>
     </ul>
   </div>
