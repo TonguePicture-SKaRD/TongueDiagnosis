@@ -102,7 +102,7 @@
         setTimeout(function () {
           console.log(("开始轮询"))
           console.log(props.isupstate)
-          if (props.isupstate === true) {
+          if (props.isupstate === true || rec.value[0].state === 0) {
             console.log(("开始轮询加上向后端发送请求"))
             axios.get("/user/record", {
               headers: {
