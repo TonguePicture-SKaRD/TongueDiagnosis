@@ -3,9 +3,9 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import router from '@/router'
 
-
 import { getCurrentInstance, onBeforeMount} from "vue";
 import axios from "axios";
+import {routes} from "vue-router/vue-router-auto-routes";
 let { proxy } = getCurrentInstance();
 
 // 检测当前页面并且正确显示黄线
@@ -40,6 +40,7 @@ onBeforeMount(() => {
       })
       .catch(function(error) {
         console.log(error);
+        router.push('/register')
       });
 });
 </script>

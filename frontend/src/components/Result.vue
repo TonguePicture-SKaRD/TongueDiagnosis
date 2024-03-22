@@ -129,7 +129,7 @@
                     // 这里可以写一些中止轮询的条件 比如code值返回0时
                     console.log("轮询停止")
                     emit("getRecord", false)
-                    clearInterval(timer)
+                    // clearInterval(timer)
                   }
                 })
           }
