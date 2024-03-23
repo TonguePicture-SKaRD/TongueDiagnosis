@@ -10,12 +10,15 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
-      component: HomeView //首页
+      component: HomeView,//首页
+      meta: {
+        requireAuth: true,  // 判断是否需要登录
+      },
     },
     {
       path: '/login',
       name: 'login',
-      component: Login //登录界面
+      component: Login//登录界面
     },
     {
       path: '/register',
@@ -25,7 +28,10 @@ const router = createRouter({
     {
       path: '/check',
       name: 'check',
-      component: Check
+      component: Check,
+      meta: {
+        requireAuth: true,  // 判断是否需要登录
+      },
     },
     {
       path:'',
@@ -35,3 +41,5 @@ const router = createRouter({
 })
 
 export default router
+
+

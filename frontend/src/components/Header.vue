@@ -3,9 +3,9 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import router from '@/router'
 
-
 import { getCurrentInstance, onBeforeMount} from "vue";
 import axios from "axios";
+import {routes} from "vue-router/vue-router-auto-routes";
 let { proxy } = getCurrentInstance();
 
 // 检测当前页面并且正确显示黄线
@@ -24,10 +24,14 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 const isl = ref(1);
+let token = localStorage.getItem('token');
 onBeforeMount(() => {
   //调用方法
   proxy.$http
       .get("/user/info", {
+        headers:{
+          "Authorization":"Bearer " + token
+        }
       })
       .then(function(res) {
         console.log(res.data.code)
@@ -36,6 +40,7 @@ onBeforeMount(() => {
       })
       .catch(function(error) {
         console.log(error);
+        router.push('/register')
       });
 });
 </script>
@@ -69,7 +74,7 @@ onBeforeMount(() => {
   </div>
   <div class="nouser" v-else>
     <ul>
-      <li><h3><router-link to="/login">登录</router-link></h3></li>
+      <li><h3><router-link to="/register">登录</router-link></h3></li>
       <li><h3><router-link to="/register">注册</router-link></h3></li>
     </ul>
   </div>

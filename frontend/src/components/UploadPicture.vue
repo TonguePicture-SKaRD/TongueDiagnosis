@@ -1,73 +1,64 @@
 <template>
-  <el-row :gutter="12" class="demo-radius">
-    <el-col
-        v-for="(radius, i) in radiusGroup"
-        :key="i"
-        :span="6"
-        :xs="{ span: 12 }"
-    >
-      <div class="title">{{ radius.name }}</div>
-      <div class="value">
-        <code>border-radius: {{ getValue(radius.type) || '0px' }}</code>
+  <el-upload
+      class="upload-demo"
+      drag
+      multiple
+      :on-change="PicOnLoad"
+      :http-request="handleSuccess"
+  >
+    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+    <div class="el-upload__text">
+      将文件拖入此处 或 <em> 点击此处上传照片</em>
+    </div>
+    <template #tip>
+      <div class="el-upload__tip">
+        舌象照片要求舌象清晰。照片上传后需等待约30s才能查询结果。<br>本测试仅做参考，不具有医学证明资格，如有不适，请去医院。
       </div>
-      <div
-          class="radius"
-          :style="{
-          borderRadius: radius.type
-            ? `var(--el-border-radius-${radius.type})`
-            : '',
-        }"
-      />
-    </el-col>
-  </el-row>
+    </template>
+  </el-upload>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { UploadFilled } from '@element-plus/icons-vue'
+import {defineEmits} from 'vue'
+import axios from "axios";
+import {ref} from "vue";
+import { ElMessage } from 'element-plus'
+// const props = defineProps(['isupload'])
+const emit = defineEmits(["test"])
 
-const radiusGroup = ref([
-  {
-    name: 'No Radius',
-    type: '',
-  },
-  {
-    name: 'Small Radius',
-    type: 'small',
-  },
-  {
-    name: 'Large Radius',
-    type: 'base',
-  },
-  {
-    name: 'Round Radius',
-    type: 'round',
-  },
-])
-
-const getValue = (type: string) => {
-  const getCssVarValue = (prefix, type) =>
-      getComputedStyle(document.documentElement).getPropertyValue(
-          `--el-${prefix}-${type}`
-      )
-  return getCssVarValue('border-radius', type)
+let e;//这个是上传图片的文件
+function PicOnLoad(file){
+  e = file
+}
+async function handleSuccess(event){
+  let formData = new FormData()
+  formData.append('file_data',e.raw)
+  axios.post('http://127.0.0.1:5000/api/model/upload',formData,{
+    headers:{
+      'Content-Type':'multipart/form-data',
+      'Authorization':'Bearer ' + localStorage.getItem('token')
+    }
+  }).then(res=>{
+    console.log("图像上传成功")
+    emit("test",true)
+    // props.isupload = 1
+    ElMessage({
+      showClose: true,
+      message: '上传成功，请等待约30秒',
+      type: 'success',
+    })
+  }).catch(error => {
+    console.log(error)
+    ElMessage({
+      showClose: true,
+      message: '图片上传失败，请确认网络环境',
+      type: 'error',
+    })
+  })
 }
 </script>
-<style scoped>
-.demo-radius .title {
-  color: var(--el-text-color-regular);
-  font-size: 18px;
-  margin: 10px 0;
-}
-.demo-radius .value {
-  color: var(--el-text-color-primary);
-  font-size: 16px;
-  margin: 10px 0;
-}
-.demo-radius .radius {
-  height: 40px;
-  width: 70%;
-  border: 1px solid var(--el-border-color);
-  border-radius: 0;
-  margin-top: 20px;
-}
+
+<style>
+
 </style>

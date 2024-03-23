@@ -9,3 +9,4 @@ frontend/public/tongue
 /application/net/weights/tongue_color.pth
 /application/net/weights/unet.pth
 /application/net/weights/yolov5.pt
+/application/net/weights/
