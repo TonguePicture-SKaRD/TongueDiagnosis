@@ -1,13 +1,38 @@
-<script setup>
- import { RouterLink, RouterView } from 'vue-router'
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+import Header from "@/components/Header.vue";
+import Carousel from "@/components/Carousel.vue"
+import { useRouter } from "vue-router";
+import TotalUpload from "@/components/TotalUpload.vue";
+import {
+  Check,
+  Delete,
+  Edit,
+  Message,
+  Search,
+  Star,
+} from '@element-plus/icons-vue'
+
+const router = useRouter()
+
+function jump(){
+  console.log('123')
+  router.push('/check')
+}
 </script>
+
 <template>
-  <h1>这是home页面</h1>
-  <router-link to='/check'>到check页面</router-link>
-  <div>
-    <header>
-      <div class="moving-bar"></div>
-    </header>
+  <Header class="header"></Header>
+  <Carousel class="carousel"></Carousel>
+
+  <div class="checkbutton">
+    <el-button type="primary" @click="jump">开始检测</el-button>
+  </div>
+  <!-- First section with instructions -->
+  <div class="recordbutton">
+    <el-button type="success" @click="jump">查看结果</el-button>
+  </div>>
+  <div class="section-wrapper">
     <main>
       <section class="instruction">
         <h2>使用说明</h2>
@@ -15,56 +40,29 @@
       </section>
     </main>
   </div>
-  <div>
-    <header>
-      <div class="moving-bar">
-        <div class="block"></div>
-        <div class="block"></div>
-        <div class="block"></div>
-      </div>
-    </header>
-    <main>
-      <section class="instruction">
-        <h2>Instructions</h2>
-        <p>Write your instructions here...</p>
-      </section>
-    </main>
+
+  <!-- Rolling bar -->
+  <div class="rolling-bar">
+    <div class="moving-bar"></div>
   </div>
+
+
+
 
 </template>
 
-<script>
-export default {
-  name: 'Homepage',
-  // Add any script logic here if needed
-};
-
-</script>
-
 <style scoped>
-header {
+.header {
   background-color: #333;
-  height: 50px;
+  height: 500px;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 50%;
 }
 
-.moving-bar {
-  background-color: #ff9900; /* Adjust color as needed */
-  height: 5px;
-  width: 100%;
-  animation: moveBar 2s infinite alternate;
-}
-
-@keyframes moveBar {
-  from { left: 0; }
-  to { left: calc(100% - 100px); } /* Adjust as needed */
-}
-
-main {
-  margin-top: 60px; /* Adjust to accommodate the header */
+.section-wrapper {
+  margin-top: 300px; /* Adjust to accommodate the header */
   padding: 20px;
 }
 
@@ -72,40 +70,27 @@ main {
   text-align: center;
 }
 
-/* Additional styles as needed */
-header {
-  background-color: #333;
-  height: 50px;
+/* Rolling bar styles */
+.rolling-bar {
   position: fixed;
-  top: 0;
+  top: 7%; /* Place it in the middle of the viewport vertically */
   left: 0;
   width: 100%;
 }
 
 .moving-bar {
-  background-color: #ff9900; /* Adjust color as needed */
-  height: 5px;
+  background-color: #ff9900;
+  height: 15px;
   width: 100%;
   animation: moveBar 2s infinite alternate;
 }
 
 @keyframes moveBar {
   from { left: 0; }
-  to { left: calc(100% - 100px); } /* Adjust as needed */
+  to { left: calc(100% - 100px); }
 }
-
-main {
-  margin-top: 60px; /* Adjust to accommodate the header */
-  padding: 20px;
-}
-
-.instruction {
-  text-align: center;
-}
-
-/* Additional styles as needed */
-
 </style>
+
 
 
 

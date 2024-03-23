@@ -25,24 +25,24 @@ const handleSelect = (key: string, keyPath: string[]) => {
 
 const isl = ref(1);
 let token = localStorage.getItem('token');
-onBeforeMount(() => {
-  //调用方法
-  proxy.$http
-      .get("/user/info", {
-        headers:{
-          "Authorization":"Bearer " + token
-        }
-      })
-      .then(function(res) {
-        console.log(res.data.code)
-        isl.value = res.data.code;
-        console.log(isl.value);
-      })
-      .catch(function(error) {
-        console.log(error);
-        router.push('/register')
-      });
-});
+// onBeforeMount(() => {
+//   //调用方法
+//   proxy.$http
+//       .get("/user/info", {
+//         headers:{
+//           "Authorization":"Bearer " + token
+//         }
+//       })
+//       .then(function(res) {
+//         console.log(res.data.code)
+//         isl.value = res.data.code;
+//         console.log(isl.value);
+//       })
+//       .catch(function(error) {
+//         console.log(error);
+//         router.push('/register')
+//       });
+// });
 </script>
 
 <template>
