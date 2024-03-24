@@ -25,13 +25,15 @@ function jump(){
   <Header class="header"></Header>
   <Carousel class="carousel"></Carousel>
 
-  <div class="checkbutton">
-    <el-button type="primary" @click="jump">开始检测</el-button>
-  </div>
+  <div class="button-field">
+  <span class="checkbuttonParent">
+    <el-button class="checkbutton" size="large" type="primary" @click="jump">开始检测</el-button>
+  </span>
   <!-- First section with instructions -->
-  <div class="recordbutton">
-    <el-button type="success" @click="jump">查看结果</el-button>
-  </div>>
+  <span class="recordbuttonParent">
+    <el-button class="recordbutton" size="large" type="success" @click="jump">检查结果</el-button>
+  </span>
+  </div>
   <div class="section-wrapper">
     <main>
       <section class="instruction">
@@ -52,7 +54,7 @@ function jump(){
 </template>
 
 <style scoped>
-.header {
+header {
   background-color: #333;
   height: 500px;
   position: fixed;
@@ -62,8 +64,8 @@ function jump(){
 }
 
 .section-wrapper {
-  margin-top: 300px; /* Adjust to accommodate the header */
-  padding: 20px;
+  margin-top: 50px; /* Adjust to accommodate the header */
+  padding: 5px;
 }
 
 .instruction {
@@ -76,6 +78,29 @@ function jump(){
   top: 7%; /* Place it in the middle of the viewport vertically */
   left: 0;
   width: 100%;
+}
+
+.button-field {
+  display: flex;
+}
+
+.checkbuttonParent{
+  position: relative;
+}
+
+.checkbutton{
+  height: 400px;
+  width: 400px;
+}
+
+.recordbuttonParent{
+  margin-left:auto;
+  position: relative;
+}
+
+.recordbutton{
+  height: 400px;
+  width: 400px;
 }
 
 .moving-bar {
