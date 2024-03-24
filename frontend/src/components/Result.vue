@@ -14,7 +14,7 @@
         检测中，请稍等
       </el-descriptions-item>
       <el-descriptions-item label="检测结果" v-if="item.state === 1">
-        {{color[item.result.tongue_color]}}，{{outcolor[item.result.coating_color]}}，{{rot[item.result.rot_greasy]}}，{{thick[item.result.tongue_thickness]}}
+        {{color[item.result.tongue_color]}}{{outcolor[item.result.coating_color]}}{{rot[item.result.rot_greasy]}}{{thick[item.result.tongue_thickness]}}
       </el-descriptions-item>
       <el-descriptions-item label="检测结果" v-if="item.state === 201">
         未检测到舌象，请重新上传清晰舌象
@@ -47,24 +47,24 @@
   const props = defineProps(['isupstate'])
 
   const color = {
-    [0]: "淡白舌",
-    [1]: "淡红舌",
-    [2]: "红舌",
-    [3]: "绛舌",
-    [4]: "青紫舌",
+    [0]: "舌色：淡白舌，比正常舌色浅淡。主气血两虚、阳虚；",
+    [1]: "舌色：淡红舌，舌色淡红润泽。常见于健康人；",
+    [2]: "舌色：红舌，比正常舌色红，一般有主热证；",
+    [3]: "舌色：绛舌，较红舌颜色更深，或略带暗红色。主热盛证；",
+    [4]: "舌色：青紫舌，可能是气虚无力推动血液运行；",
   }
   const outcolor = {
-    [0]: "白苔",
-    [1]: "黄苔",
-    [2]: "灰黑苔",
+    [0]: "舌苔颜色：白苔，可能是外感风邪或体内有寒湿；",
+    [1]: "舌苔颜色：黄苔，可能为实热证、虚热证或外感风热之邪；",
+    [2]: "舌苔颜色：灰黑苔，可能为实热证或实寒证，寒热证程度深；",
   }
   const rot = {
-    [0]: "腻",
-    [1]: "腐",
+    [0]: "舌苔腻，多属阳气被阴邪所遏，为寒湿夹痰或为湿热夹痰；",
+    [1]: "舌苔腐，腐苔多为阳热有余；",
   }
   const thick = {
-    [0]: "薄",
-    [1]: "厚",
+    [0]: "舌头薄，正常一般与最近饮食有关，无大碍。",
+    [1]: "舌头厚，正常一般与最近饮食有关，无大碍。",
   }
   function reverseArray1(arr) {
     for (let index = 0; index < Math.floor(arr.length / 2); index++) {
