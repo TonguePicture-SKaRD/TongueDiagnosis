@@ -1,5 +1,5 @@
-*.py linguist-language=c++
-*.vue linguist-language=c++
-*.html linguist-language=c++
-*.css linguist-language=c++
-*.js linguist-language=c++
+*.py linguist-language=python
+*.vue linguist-language=vue
+*.html linguist-language=html
+*.css linguist-language=css
+*.js linguist-language=javaScript
