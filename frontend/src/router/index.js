@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Home from '../views/Home.vue'
 import Check from "../views/Check.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
@@ -10,7 +10,7 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
-      component: HomeView,//首页
+      component: Home,//首页
       meta: {
         requireAuth: true,  // 判断是否需要登录
       },

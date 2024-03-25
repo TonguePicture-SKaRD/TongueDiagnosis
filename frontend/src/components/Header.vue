@@ -47,7 +47,7 @@ onBeforeMount(() => {
 
 <template>
 <!--顶栏组件-->
-  <div class="Header" />
+  <div class="Header">
   <!--element+的menu组件-->
   <el-menu
       :default-active="activeIndex"
@@ -78,10 +78,12 @@ onBeforeMount(() => {
       <li><h3><router-link to="/register">注册</router-link></h3></li>
     </ul>
   </div>
+    </div>
 </template>
 
 
 <style>
+
 /*用户头像*/
 .user {
   display:flex;
