@@ -23,7 +23,7 @@
         出现多个舌象，请重新拍照上传
       </el-descriptions-item>
       <el-descriptions-item label="检测结果" v-if="item.state === 203">
-        网络出现问题，请重新上传清晰舌象
+        文件类型有误，请核对后重新上传
       </el-descriptions-item>
     </el-descriptions>
   </div>
