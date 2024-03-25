@@ -88,14 +88,14 @@ class TonguePredictor:
             x1, y1, x2, y2 = (
                 pred.xyxy[0][0, 0].item(), pred.xyxy[0][0, 1].item(), pred.xyxy[0][0, 2].item(),
                 pred.xyxy[0][0, 3].item())
-            split_mask = predict_img.crop((x1, y1, x2, y2))
+            split_mask = predict_img.crop((x1, y1, x2, y2)).convert("RGB")
             split_mask = torchvision.transforms.ToTensor()(split_mask)
             split_mask = split_mask.unsqueeze(0)
             split_mask = split_mask.to(self.device)
             pred = torch.sigmoid(self.unet(split_mask))
             pred = (pred > 0.5)
             pred = np.transpose(pred.cpu().numpy(), (0, 2, 3, 1))
-            split_img = predict_img.crop((x1, y1, x2, y2))
+            split_img = predict_img.crop((x1, y1, x2, y2)).convert("RGB")
             split_img = np.array(split_img)
             result = pred * split_img
 
