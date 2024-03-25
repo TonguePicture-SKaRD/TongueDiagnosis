@@ -128,13 +128,16 @@ class TonguePredictor:
         :param fun:
         :return:
         """
-        img.seek(0)
-        tmpfile = tempfile.SpooledTemporaryFile()
-        content = img.read()
-        tmpfile.write(content)
-        self.queue.put((tmpfile, record_id, fun))
-        img.seek(0)
-        return {"code": 0}
+        try:
+            img.seek(0)
+            tmpfile = tempfile.SpooledTemporaryFile()
+            content = img.read()
+            tmpfile.write(content)
+            self.queue.put((tmpfile, record_id, fun))
+            img.seek(0)
+            return {"code": 0}
+        except Exception as e:
+            return {"code": 3}
 
     def main(self):
         """
@@ -147,6 +150,14 @@ class TonguePredictor:
             img, record_id, fun = self.queue.get()
             try:
                 self.__predict(img, record_id, fun)
+            except Exception as e:
+                print(e)
+                fun(event_id=record_id,
+                    tongue_color=None,
+                    coating_color=None,
+                    tongue_thickness=None,
+                    rot_greasy=None,
+                    code=203)
             finally:
                 img.close()
 
