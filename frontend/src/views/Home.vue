@@ -69,7 +69,6 @@ import { useRouter } from 'vue-router';
     display: flex;
     -webkit-box-align: center;
     -ms-flex-align: center;
-    align-items: center;
     background-image: url("../assets/home_back.jpg");
     background-repeat: no-repeat;
     background-size: cover;
@@ -81,6 +80,7 @@ import { useRouter } from 'vue-router';
   .container {
     margin-left: 5%;
     margin-right: 5%;
+    margin-top: 10%;
     width: 100%;
   }
 
