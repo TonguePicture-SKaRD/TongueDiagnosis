@@ -69,7 +69,7 @@ import { useRouter } from 'vue-router';
     display: flex;
     -webkit-box-align: center;
     -ms-flex-align: center;
-    background-image: url("../assets/home_back.jpg");
+    background-image: url("../assets/home_back .jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
