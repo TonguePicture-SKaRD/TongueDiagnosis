@@ -57,6 +57,11 @@ class TonguePredictor:
         :return:
         """
         predict_img = Image.open(img)
+        large_edge = max(predict_img.size)
+        black_img = Image.new("RGB", (large_edge, large_edge), (0, 0, 0))
+        black_img.paste(predict_img, (0, 0))
+        black_img = black_img.resize((480,480))
+        predict_img = black_img
         # 舌体定位
         self.yolo.eval()
         print("舌体定位")
