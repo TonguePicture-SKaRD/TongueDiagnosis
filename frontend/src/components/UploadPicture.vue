@@ -35,7 +35,7 @@ function PicOnLoad(file){
 async function handleSuccess(event){
   let formData = new FormData()
   formData.append('file_data',e.raw)
-  axios.post('http://127.0.0.1:5000/api/model/upload',formData,{
+  axios.post('/model/upload',formData,{
     headers:{
       'Content-Type':'multipart/form-data',
       'Authorization':'Bearer ' + localStorage.getItem('token')
