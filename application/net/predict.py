@@ -6,6 +6,8 @@ from PIL import Image
 import numpy as np
 
 from yolov5 import load
+from segment_anything import sam_model_registry,SamPredictor
+
 
 from application.net.model.unet import UNet
 from application.net.model.resnet import ResNetPredictor
@@ -22,7 +24,7 @@ class TonguePredictor:
 
     def __init__(self,
                  yolo_path='application/net/weights/yolov5.pt',
-                 unet_path='application/net/weights/unet.pth',
+                 sam_path='application/net/weights/sam_vit_b_01ec64.pth',
                  resnet_path=[
                      'application/net/weights/tongue_color.pth',
                      'application/net/weights/tongue_coat_color.pth',
@@ -37,9 +39,8 @@ class TonguePredictor:
         # yolov5模型
         self.yolo = load(yolo_path, device='cpu')
 
-        # unet模型
-        self.unet = UNet()
-        self.unet.load_state_dict(torch.load(unet_path, map_location=self.device))
+        # sam模型
+        self.sam = sam_model_registry["vit_b"](checkpoint=sam_path)
 
         # 残差网络
         self.resnet = ResNetPredictor(resnet_path)
@@ -56,11 +57,6 @@ class TonguePredictor:
         :return:
         """
         predict_img = Image.open(img)
-        large_edge = max(predict_img.size)
-        black_img = Image.new("RGB", (large_edge, large_edge), (0, 0, 0))
-        black_img.paste(predict_img, (0, 0))
-        black_img = black_img.resize((480,480))
-        predict_img = black_img
         # 舌体定位
         self.yolo.eval()
         print("舌体定位")
@@ -87,24 +83,30 @@ class TonguePredictor:
             print("图片不合法，舌头太多了")
             return
         # 舌体分割
-        self.unet.eval()
         print("舌体分割")
         with torch.no_grad():
             x1, y1, x2, y2 = (
                 pred.xyxy[0][0, 0].item(), pred.xyxy[0][0, 1].item(), pred.xyxy[0][0, 2].item(),
                 pred.xyxy[0][0, 3].item())
-            split_mask = predict_img.crop((x1, y1, x2, y2)).convert("RGB")
-            split_mask = torchvision.transforms.ToTensor()(split_mask)
-            split_mask = split_mask.unsqueeze(0)
-            split_mask = split_mask.to(self.device)
-            pred = torch.sigmoid(self.unet(split_mask))
-            pred = (pred > 0.5)
-            pred = np.transpose(pred.cpu().numpy(), (0, 2, 3, 1))
-            split_img = predict_img.crop((x1, y1, x2, y2)).convert("RGB")
-            split_img = np.array(split_img)
-            result = pred * split_img
+            print("生成矩形")
+            # 切出舌体
+            predictor = SamPredictor(sam_model=self.sam)
+            predictor.set_image(np.array(predict_img))
+            print("图像编码")
+            masks, _, _ = predictor.predict(box=np.array([x1, y1, x2, y2]))
+            print("生成掩码")
+            original_img = np.array(predict_img)
+            print("生成原图")
+            masks = np.transpose(masks, (1,2,0))
+            print("调整纬度")
+            pred = original_img * masks
+            print("生成预测图")
 
-        result = result.squeeze(0)
+            result = Image.fromarray(pred).crop((x1, y1, x2, y2)).convert("RGB")
+            print("生成结果")
+            result = np.array(result)
+            print("转换为数组")
+
         result = self.resnet.predict(result)
         print("舌体分析")
 
