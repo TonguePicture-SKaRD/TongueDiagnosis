@@ -114,7 +114,7 @@
                   rec.value = res.data.data
                   reverseArray1(rec.value)
                   console.log(rec.value)
-                  console.log(rec.value[1].state)
+                  console.log(rec.value[0].state)
                   if (Object.keys(rec.value).length !== 0) {
                     console.log('rec is not null')
                     isEmpty.value = true
@@ -125,7 +125,7 @@
                 })
                 .then(res => {
                   //视情况而定
-                  if (rec.value[0].state !== 1 || rec.value === []) {
+                  if (rec.value[0].state !== 0 || rec.value === []) {
                     // 这里可以写一些中止轮询的条件 比如code值返回0时
                     console.log("轮询停止")
                     emit("getRecord", false)
