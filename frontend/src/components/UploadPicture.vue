@@ -5,6 +5,7 @@
       multiple
       :on-change="PicOnLoad"
       :http-request="handleSuccess"
+      accept=".jpg,.jpeg,.png,.bmp"
   >
     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
     <div class="el-upload__text">
