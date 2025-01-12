@@ -3,7 +3,7 @@
   <div class="login-container">
     <el-card class="login-card" shadow="hover">
       <el-form ref="Email_Password_login" style="max-width: 210px" :model="user" status-icon :rules="rules"
-               label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#d3b7d8" size="large">
+               label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#ffffff" size="large">
 
         <el-form-item label="" prop="Email">
           <el-input v-model="user.Email" placeholder="请输入邮箱" id="l_email" :prefix-icon="Avatar" size="large"/>

@@ -1,7 +1,9 @@
 <template>
-  <div class="common-layout">
-    <Main :receivedInput="sharedInput"/>
-    <Bottom @send-to-main="handleSendToMain"/>
+  <div class="back-ground">
+    <div class="common-layout">
+      <Main :receivedInput="sharedInput"/>
+      <Bottom @send-to-main="handleSendToMain"/>
+    </div>
   </div>
 </template>
 
@@ -21,6 +23,12 @@ const handleSendToMain = (inputValue: any) => {
 </script>
 
 <style scoped>
+.back-ground {
+  height: 100vh;
+  background: linear-gradient(135deg, #4facfe, rgba(90, 224, 231, 0.9), #00d4a9, #00cba9);
 
+  background-size: 200% 200%; /* 放大背景尺寸 */
+
+}
 
 </style>

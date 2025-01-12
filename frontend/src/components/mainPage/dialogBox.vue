@@ -9,7 +9,7 @@
         <Rank/>
       </el-icon>
     </div>
-    <input @keydown="handleKeyDown" class="message-input" v-model="inputValue" placeholder="Please enter here"
+    <input @keydown="handleKeyDown" class="message-input" v-model="inputValue" placeholder="请在此输入"
            style="height: auto;">
     <el-button type="success" :icon="Promotion" @click="sendToMain" size="large" style="font-size: 20px;" circle/>
     <!-- 点击按钮控制语音识别的开始和停止 -->

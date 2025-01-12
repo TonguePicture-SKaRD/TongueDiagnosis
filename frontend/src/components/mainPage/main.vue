@@ -48,7 +48,7 @@ import {ref, nextTick, computed, onBeforeMount, createCommentVNode} from 'vue';
 import MarkdownIt from 'markdown-it'; //渲染markdown
 import hljs from 'highlight.js'; // 引入代码高亮库
 import 'github-markdown-css';
-import {useStateStore} from "@/stores/stateStore.ts"; //状态获取
+import {useStateStore} from "@/stores/stateStore"; //状态获取
 import 'highlight.js/styles/github.css'; // 确保引入样式文件
 import axios from 'axios';
 import emojiRegex from 'emoji-regex'; //去除emoji

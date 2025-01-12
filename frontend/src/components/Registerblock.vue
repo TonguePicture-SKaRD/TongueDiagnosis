@@ -3,7 +3,7 @@
   <div class="register-container">
     <el-card class="register-card" shadow="hover">
       <el-form ref="Email_Password_register" style="max-width: 210px;margin-top: 10px" :model="user" status-icon :rules="rules"
-               label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#d3b7d8"
+               label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#ffffff"
                size="large">
 
         <el-form-item label="" prop="Email">
