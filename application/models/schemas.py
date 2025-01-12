@@ -4,7 +4,7 @@
 """
 
 from pydantic import BaseModel
-from typing import Union, Annotated
+from typing import Union, Annotated, Optional
 from fastapi.param_functions import Form
 
 
@@ -69,10 +69,10 @@ class Result(BaseModel):
     tongue_thickness: int
     rot_greasy: int
     """
-    tongue_color: int
-    coating_color: int
-    tongue_thickness: int
-    rot_greasy: int  
+    tongue_color: Optional[int] = None
+    coating_color: Optional[int] = None
+    tongue_thickness: Optional[int] = None
+    rot_greasy: Optional[int] = None
 
 
 class Record(BaseModel):
@@ -85,8 +85,8 @@ class Record(BaseModel):
     ID: int
     user_ID: int
     img_src: str
-    state: int
-    result: Result
+    state: int = None
+    result: Optional[Result] = None
 
 
 class LoginResponse(BaseResponse):

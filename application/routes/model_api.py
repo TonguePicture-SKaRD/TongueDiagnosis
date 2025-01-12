@@ -54,11 +54,12 @@ async def upload(file_data: UploadFile,
     f.close()
 
     # 写入事件
-    code = write_event(user_id=user.id, img_src=file_location, state=0, db=db)
+    img_db_path = f"{Settings.IMG_DB_PATH}/{filename}"
+    code = write_event(user_id=user.id, img_src=img_db_path, state=0, db=db)
 
     # 模型调用
     if code == 0:
-        record = get_record_by_location(file_location, db=db)
+        record = get_record_by_location(img_db_path, db=db)
         analysis(img=file_data.file, record_id=record.id, function=write_result)
         return schemas.UploadResponse(
             code=0,

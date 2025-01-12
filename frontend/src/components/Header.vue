@@ -3,9 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import router from '@/router'
 
-
 import { getCurrentInstance, onBeforeMount} from "vue";
-import axios from "axios";
 let { proxy } = getCurrentInstance();
 
 // 检测当前页面并且正确显示黄线
@@ -40,13 +38,21 @@ onBeforeMount(() => {
       })
       .catch(function(error) {
         console.log(error);
+        router.push('/register')
       });
 });
+
+function logout(){
+  window.localStorage.removeItem('token')
+  console.log("登出成功")
+  window.location.reload()
+  console.log("刷新成功")
+}
 </script>
 
 <template>
 <!--顶栏组件-->
-  <div class="Header" />
+  <div class="Header">
   <!--element+的menu组件-->
   <el-menu
       :default-active="activeIndex"
@@ -66,28 +72,44 @@ onBeforeMount(() => {
   </el-menu>
   <!--用户logo,条件渲染-->
   <div class="user" v-if="isl == 0">
-    <ul>
+<!--    <ul>-->
+<!--      <li><h2><a href="#" class="logo">头像</a></h2></li>-->
+<!--      <li><h2><a href="#">用户user</a></h2></li>-->
+<!--    </ul>-->
+
+    <el-dropdown>
+    <span class="el-dropdown-link">
+      <ul>
       <li><h2><a href="#" class="logo">头像</a></h2></li>
       <li><h2><a href="#">用户user</a></h2></li>
     </ul>
+    </span>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item @click="logout">登出</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
   </div>
   <div class="nouser" v-else>
     <ul>
-      <li><h3><router-link to="/login">登录</router-link></h3></li>
+      <li><h3><router-link to="/register">登录</router-link></h3></li>
       <li><h3><router-link to="/register">注册</router-link></h3></li>
     </ul>
   </div>
+    </div>
 </template>
 
 
 <style>
+
 /*用户头像*/
 .user {
   display:flex;
   width: 150px;
   margin: 0 auto;
   position: relative;
-  bottom: 52px;
+  bottom: 48px;
   left: 500px;
 }
 .user ul {

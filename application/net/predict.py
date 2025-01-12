@@ -6,6 +6,8 @@ from PIL import Image
 import numpy as np
 
 from yolov5 import load
+from segment_anything import sam_model_registry,SamPredictor
+
 
 from application.net.model.unet import UNet
 from application.net.model.resnet import ResNetPredictor
@@ -22,7 +24,7 @@ class TonguePredictor:
 
     def __init__(self,
                  yolo_path='application/net/weights/yolov5.pt',
-                 unet_path='application/net/weights/unet.pth',
+                 sam_path='application/net/weights/sam_vit_b_01ec64.pth',
                  resnet_path=[
                      'application/net/weights/tongue_color.pth',
                      'application/net/weights/tongue_coat_color.pth',
@@ -37,9 +39,8 @@ class TonguePredictor:
         # yolov5模型
         self.yolo = load(yolo_path, device='cpu')
 
-        # unet模型
-        self.unet = UNet()
-        self.unet.load_state_dict(torch.load(unet_path, map_location=self.device))
+        # sam模型
+        self.sam = sam_model_registry["vit_b"](checkpoint=sam_path)
 
         # 残差网络
         self.resnet = ResNetPredictor(resnet_path)
@@ -58,35 +59,49 @@ class TonguePredictor:
         predict_img = Image.open(img)
         # 舌体定位
         self.yolo.eval()
+        print("舌体定位")
         with torch.no_grad():
             pred = self.yolo(predict_img)
-        if len(pred.xyxy) == 0:
+        if len(pred.xyxy[0]) < 1:
             # 图片不合法
-            fun(event_id=record_id, code=201)
+            fun(event_id=record_id,
+                tongue_color=None,
+                coating_color=None,
+                tongue_thickness=None,
+                rot_greasy=None,
+                code=201)
+            print("图片不合法，没舌头")
             return
-        elif len(pred.xyxy) > 1:
+        elif len(pred.xyxy[0]) > 1:
             # 图片不合法
-            fun(event_id=record_id, code=202)
+            fun(event_id=record_id,
+                tongue_color=None,
+                coating_color=None,
+                tongue_thickness=None,
+                rot_greasy=None,
+                code=202)
+            print("图片不合法，舌头太多了")
             return
         # 舌体分割
-        self.unet.eval()
+        print("舌体分割")
         with torch.no_grad():
             x1, y1, x2, y2 = (
                 pred.xyxy[0][0, 0].item(), pred.xyxy[0][0, 1].item(), pred.xyxy[0][0, 2].item(),
                 pred.xyxy[0][0, 3].item())
-            split_mask = predict_img.crop((x1, y1, x2, y2))
-            split_mask = torchvision.transforms.ToTensor()(split_mask)
-            split_mask = split_mask.unsqueeze(0)
-            split_mask = split_mask.to(self.device)
-            pred = torch.sigmoid(self.unet(split_mask))
-            pred = (pred > 0.5)
-            pred = np.transpose(pred.cpu().numpy(), (0, 2, 3, 1))
-            split_img = predict_img.crop((x1, y1, x2, y2))
-            split_img = np.array(split_img)
-            result = pred * split_img
 
-        result = result.squeeze(0)
+            # 切出舌体
+            predictor = SamPredictor(sam_model=self.sam)
+            predictor.set_image(np.array(predict_img))
+            masks, _, _ = predictor.predict(box=np.array([x1, y1, x2, y2]))
+            original_img = np.array(predict_img)
+            masks = np.transpose(masks, (1,2,0))
+            pred = original_img * masks
+
+            result = Image.fromarray(pred).crop((x1, y1, x2, y2)).convert("RGB")
+            result = np.array(result)
+
         result = self.resnet.predict(result)
+        print("舌体分析")
 
         predict_result = {
             "code": 0,
@@ -113,13 +128,16 @@ class TonguePredictor:
         :param fun:
         :return:
         """
-        img.seek(0)
-        tmpfile = tempfile.SpooledTemporaryFile()
-        content = img.read()
-        tmpfile.write(content)
-        self.queue.put((tmpfile, record_id, fun))
-        img.seek(0)
-        return {"code": 0}
+        try:
+            img.seek(0)
+            tmpfile = tempfile.SpooledTemporaryFile()
+            content = img.read()
+            tmpfile.write(content)
+            self.queue.put((tmpfile, record_id, fun))
+            img.seek(0)
+            return {"code": 0}
+        except Exception as e:
+            return {"code": 3}
 
     def main(self):
         """
@@ -132,10 +150,15 @@ class TonguePredictor:
             img, record_id, fun = self.queue.get()
             try:
                 self.__predict(img, record_id, fun)
+            except Exception as e:
+                print(e)
+                fun(event_id=record_id,
+                    tongue_color=None,
+                    coating_color=None,
+                    tongue_thickness=None,
+                    rot_greasy=None,
+                    code=203)
             finally:
                 img.close()
 
 
-if __name__ == '__main__':
-    predictor = TonguePredictor()
-    predictor.predict(r'E:\Projects\deeplearning\train_example\data\old\WIN_20240305_18_54_18_Pro.jpg')
