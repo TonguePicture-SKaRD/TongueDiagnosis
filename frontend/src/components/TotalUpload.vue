@@ -10,22 +10,23 @@
 <script setup>
 import {onMounted, ref} from "vue";
 
-  let isUpload = ref(0);
-  import UploadPicture from "@/components/UploadPicture.vue";
-  import Steps from "@/components/Steps.vue";
-  import Result from "@/components/Result.vue";
+let isUpload = ref(0);
+import UploadPicture from "@/components/UploadPicture.vue";
+import Steps from "@/components/Steps.vue";
+import Result from "@/components/Result.vue";
 import axios from "axios";
 
 
-  let testState = ref(false)
-  const isTest = (value) =>{
-    console.log("图片上传，更换图标")
-    testState.value = value
-  }
-  const getRecord = (value) =>{
-    console.log("轮询结束，恢复图标")
-    testState.value = value
-  }
+let testState = ref(false)
+const isTest = (value) => {
+  console.log("图片上传，更换图标")
+  testState.value = value
+}
+const getRecord = (value) => {
+  console.log("轮询结束，恢复图标")
+  testState.value = value
+}
+
 function reverseArray1(arr) {
   for (let index = 0; index < Math.floor(arr.length / 2); index++) {
     // 借助第三方变量交换两个变量的值
@@ -35,13 +36,14 @@ function reverseArray1(arr) {
   }
   return arr;
 }
+
 let rec = ref(0)
 onMounted(function () {
   axios.get("/user/record", {
-    headers:{
-      'Authorization':'Bearer ' + localStorage.getItem('token')
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
     }
-  }).then(res=> {
+  }).then(res => {
     console.log("拿到record，判断是否显示进度条")
     rec.value = res.data.data
     reverseArray1(rec.value)
@@ -49,7 +51,7 @@ onMounted(function () {
     if (rec.value[0].state === 0) {
       testState.value = true
     }
-  }).catch(error=> {
+  }).catch(error => {
     console.log(error);
   })
 })

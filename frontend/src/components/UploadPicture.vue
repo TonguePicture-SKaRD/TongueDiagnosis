@@ -7,7 +7,9 @@
       :http-request="handleSuccess"
       accept=".jpg,.jpeg,.png,.bmp"
   >
-    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+    <el-icon class="el-icon--upload">
+      <upload-filled/>
+    </el-icon>
     <div class="el-upload__text">
       将文件拖入此处 或 <em> 点击此处上传照片</em>
     </div>
@@ -20,29 +22,29 @@
 </template>
 
 <script setup lang="ts">
-import { UploadFilled } from '@element-plus/icons-vue'
-import {defineEmits} from 'vue'
+import {UploadFilled} from '@element-plus/icons-vue'
 import axios from "axios";
 import {ref} from "vue";
-import { ElMessage } from 'element-plus'
+import {ElMessage} from 'element-plus'
 // const props = defineProps(['isupload'])
 const emit = defineEmits(["test"])
 
 let e;//这个是上传图片的文件
-function PicOnLoad(file){
+function PicOnLoad(file) {
   e = file
 }
-async function handleSuccess(event){
+
+async function handleSuccess(event) {
   let formData = new FormData()
-  formData.append('file_data',e.raw)
-  axios.post('http://127.0.0.1:5000/api/model/upload',formData,{
-    headers:{
-      'Content-Type':'multipart/form-data',
-      'Authorization':'Bearer ' + localStorage.getItem('token')
+  formData.append('file_data', e.raw)
+  axios.post('http://127.0.0.1:5000/api/model/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
     }
-  }).then(res=>{
+  }).then(res => {
     console.log("图像上传成功")
-    emit("test",true)
+    emit("test", true)
     // props.isupload = 1
     ElMessage({
       showClose: true,
