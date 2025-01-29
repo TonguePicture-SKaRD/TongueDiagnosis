@@ -16,6 +16,7 @@
     "element-plus": "^2.6.1",
     "emoji-regex": "^10.4.0",
     "github-markdown-css": "^5.8.1",
+    "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",

@@ -18,7 +18,7 @@
         <!--        <div v-loading="message.loading" element-loading-background="rgba(255, 255, 255, 0.8)">-->
         <!-- 加载替换 -->
         <div v-if="message.loading" class="loading-text-gradient">
-          Generating...
+          生成中...
         </div>
 
         <!-- 消息 -->
@@ -30,7 +30,7 @@
           <!-- 添加语音播放按钮 -->
           <button v-if="!message.isUser && !message.loading" class="speech-button right-aligned"
                   @click="fetchAndPlayAudio(message.text)">🔊
-            Play Voice
+            播放音频
           </button>
 
 
@@ -58,13 +58,21 @@ import emojiRegex from 'emoji-regex'; //去除emoji
 // 使用 ref 定义响应式变量
 const userAvatar = ref("./static/userDefault.jpg");  // 用户头像
 const aiAvatar = ref("./static");      // AI 头像
-const messages = ref([{text: 'Who are you？', isUser: true, time: '2024/10/11 16:39', loading: false},
+const messages = ref([
   {
-    text: '##  👋 Hi! This is your local AI assistant.\n' +
-        '\n' +
-        '**You are experiencing a local AI chatbot that is not restricted by the network and can communicate with you anytime, anywhere.**\n' +
-        '\n' +
-        '**No need to worry about the network connection, no need to use the Internet** As long as you input your ideas or questions, I will do my best to help you.',
+    text: "# 👋 欢迎来到 **AI 中医舌诊**！\n" +
+        "\n" +
+        "📸 **请首先上传您的舌像图片**，AI 将根据中医理论进行智能分析，提供健康建议。\n" +
+        "\n" +
+        "🔍 **如何拍摄舌像？**\n" +
+        "1. 在自然光下拍摄，避免过暗或过亮。\n" +
+        "2. 放松舌头，尽量伸出，不要用力。\n" +
+        "3. 保持清洁，避免食物残留影响判断。\n" +
+        "\n" +
+        "💡 **免责声明**  \n" +
+        "本系统提供的分析结果仅供参考，不能替代专业医生的诊断，如有健康问题，请咨询中医师或专业医生。\n" +
+        "\n" +
+        "➡ **请上传舌像，让我们开始吧！**\n",
     isUser: false,
     time: '2024/10/11 16:39',
     loading: false
@@ -149,6 +157,7 @@ const sendAIMessage = async () => {
 
 
 const getAnswer = async () => {
+  console.log(baseURL);
   const timeout = 10000; // 设置超时时间（以毫秒为单位，例如10秒）
 
   const timeoutPromise = new Promise((_, reject) =>
@@ -159,14 +168,14 @@ const getAnswer = async () => {
     scrollToBottom();
 
     const response = await Promise.race([
-      fetch(baseURL + "/ai/back", {
+      fetch(baseURL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gemma2:2b",
-          prompt: personalPrompt + newMessage.value,
+          model: "qwen2.5:0.5b",
+          prompt: newMessage.value,
         }),
       }),
       timeoutPromise, // 如果 fetch 未完成，此 promise 将优先返回超时错误
@@ -251,7 +260,7 @@ const fetchAndPlayAudio = async (text) => {
   text = org(text);
   if (audioType === "De") speakMessage(text);
   else {
-    SuccessPop("Generating...", 5000);
+    SuccessPop("音频准备中...", 5000);
     const startTime = performance.now();
     try {
       const formData = new FormData();
@@ -412,7 +421,7 @@ const deleteMessage = (index) => {
   flex-direction: column;
   padding: 0px;
   margin-top: 20px; /* 让容器与顶部保持距离 */
-  height: calc(100vh - 20px); /* 调整高度，以适应新的margin-top */
+  height: calc(100vh - 100px); /* 调整高度，以适应新的margin-top */
   overflow-y: auto;
   flex-grow: 1;
   scroll-behavior: smooth;
@@ -499,7 +508,7 @@ const deleteMessage = (index) => {
 }
 
 .loading-text-gradient::before {
-  content: "Generating...";
+  content: "生成中...";
   position: absolute;
   top: 0;
   left: 0;

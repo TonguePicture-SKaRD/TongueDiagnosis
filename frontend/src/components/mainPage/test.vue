@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import {onBeforeMount, ref, watch, computed} from 'vue'
-import Main from './main_container.vue'
+import Main from './mainContainer.vue'
 import Left from "../SideBar.vue";
 import {useStateStore} from "@/stores/stateStore.ts";
 

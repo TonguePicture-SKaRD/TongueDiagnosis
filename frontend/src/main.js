@@ -13,7 +13,7 @@ import VueAxios from 'vue-axios'
 
 let token = localStorage.getItem('token');
 
-axios.defaults.baseURL = 'http://127.0.0.1:5000/api';
+axios.defaults.baseURL = 'http://10.0.0.22:5000/api';
 axios.defaults.headers = {
     Authorization:"Bearer " + token
 }
