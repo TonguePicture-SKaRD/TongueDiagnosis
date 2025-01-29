@@ -4,14 +4,37 @@
       :style="{ top: `${position.y}px`, left: `${position.x}px`, position: 'absolute', transition: 'top 0.s ease, left 0.s ease' }"
       ref="draggableContainer"
   >
-    <div class="drag-handle" @mousedown="startDrag">
+
+    <!--         上传图片组件-->
+    <div v-if="sendPic" class="upload-wrapper">
+      <el-icon class="arrow-left">
+        <ArrowRightBold/>
+      </el-icon>
+
+      <div v-if="isUploading">
+        <Steps ref="stepRef"/>
+      </div>
+      <div v-else>
+        <UploadPicture @success="startQuest" style="margin-top: 5px"/>
+      </div>
+
+
+      <el-icon class="arrow-right">
+        <ArrowLeftBold/>
+      </el-icon>
+    </div>
+
+
+    <div class="drag-handle" @mousedown="startDrag" v-if="!sendPic">
       <el-icon>
         <Rank/>
       </el-icon>
     </div>
+
     <input @keydown="handleKeyDown" class="message-input" v-model="inputValue" placeholder="请在此输入"
-           style="height: auto;">
-    <el-button type="success" :icon="Promotion" @click="sendToMain" size="large" style="font-size: 20px;" circle/>
+           style="height: auto;" v-if="!sendPic">
+    <el-button type="success" :icon="Promotion" @click="sendToMain" size="large" style="font-size: 20px;" circle
+               v-if="!sendPic"/>
     <!-- 点击按钮控制语音识别的开始和停止 -->
     <el-button
         :type="isRecording ? 'warning' : 'primary'"
@@ -21,41 +44,29 @@
         :loading="isLoading"
         style="font-size: 20px;"
         circle
-    ></el-button>
-    <!--    选择语音类型-->
-
-    <!-- 按钮 -->
-    <!-- 按钮 -->
-    <el-dropdown trigger="click" @command="handleCommand">
-      <el-button type="info" size="large" class="dropdown-button" circle>
-        {{ audioType }}
-      </el-button>
-      <template #dropdown>
-        <el-dropdown-item command="De">Default</el-dropdown-item>
-        <el-dropdown-item command="L">Lei</el-dropdown-item>
-        <el-dropdown-item command="Di">Ding</el-dropdown-item>
-        <el-dropdown-item command="C">Cai</el-dropdown-item>
-        <el-dropdown-item command="S">Sun</el-dropdown-item>
-        <el-dropdown-item command="P">Pang</el-dropdown-item>
-        <el-dropdown-item command="B">Bei</el-dropdown-item>
-        <el-dropdown-item command="N">Nai</el-dropdown-item>
-      </template>
-    </el-dropdown>
+        v-if="!sendPic"
+    />
 
 
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, onBeforeMount} from 'vue'
-import {Promotion, Rank, Microphone, CircleClose} from "@element-plus/icons-vue";
+import {ref, reactive, onBeforeMount, computed, nextTick} from 'vue'
+import {Promotion, Rank, Microphone, CircleClose, ArrowLeftBold, ArrowRightBold} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
 import {useStateStore} from '@/stores/stateStore';
 // 获取 Pinia Store
 const stateStore = useStateStore();
+import UploadPicture from '@/components/UploadPicture.vue'; // 导入上传图片组件
+import Steps from "@/components/Steps.vue";
+import axios from "axios"; //导入上传模组
+let sendPic = ref(true); // 记录现在是否要发送图片
+let isUploading = ref(false);//是否正在发送
+const stepRef = ref(null) //动态加载的变化
 
 // 定义 emit 函数
-const emit = defineEmits(['send-to-main']);
+const emit = defineEmits(['send-to-main', 'send-picture']);
 
 // 输入框的本地数据
 let inputValue = ref('');
@@ -64,7 +75,7 @@ let inputValue = ref('');
 let ask_tip = 0;
 const sendToMain = () => {
   // console.log(`发送${inputValue.value}到main`);
-  emit('send-to-main', [ask_tip, inputValue.value]);
+  emit('send-to-main', ask_tip, inputValue.value);
   ask_tip += 1;
   inputValue.value = '';
 };
@@ -74,10 +85,6 @@ const sendToMain = () => {
 const isRecording = ref(false);
 const isLoading = ref(false);
 const result = ref("");
-
-// 用于存储录音的数据
-let mediaRecorder: MediaRecorder | null = null;
-let audioChunks: Blob[] = [];
 
 //初始化url
 let baseURL = '';
@@ -89,97 +96,108 @@ onBeforeMount(() => {
 
 
 });
+let recognition = null;
 
+//舌头的分类
+const tongueDictionary = {
+  color: [
+    "舌色：淡白舌,",
+    "舌色：淡红舌,",
+    "舌色：红舌,",
+    "舌色：绛舌,",
+    "舌色：青紫舌,"
+  ],
+  outcolor: [
+    "舌苔颜色：白苔,",
+    "舌苔颜色：黄苔,",
+    "舌苔颜色：灰黑苔,"
+  ],
+  rot: [
+    "舌苔腻,",
+    "舌苔腐,"
+  ],
+  thick: [
+    "舌头薄,",
+    "舌头厚,"
+  ]
+};
+
+
+//获取查看记录
+async function getRecordData() {
+  try {
+    const response = await axios.get('/user/record', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+    return response.data
+  } catch (error) {
+    console.error('获取 /user/record 失败:', error);
+    return null; // 失败时返回 null
+  }
+}
 
 // 切换语音识别状态
 const toggleVoiceRecognition = () => {
   if (isRecording.value) {
     // 如果正在监听，停止识别
-    stopRecording();
-    console.log("停止语音识别...");
+    stopRecognition();
   } else {
     // 如果未在监听，启动识别
-    startRecording();
-    console.log("开始语音识别...");
+    startRecognition();
   }
 };
 
-// 开始录音
-const startRecording = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-    audioChunks = []; // 清空之前的音频数据
+//重新开始加载
+const resetLoading = () => {
+  stepRef.value.resetCountdown()
+}
+
+
+// 初始化语音识别
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = false; // 设为非连续模式
+  recognition.interimResults = false; // 只返回最终结果
+  recognition.lang = 'zh-CN'; // 设定语言为中文
+
+  recognition.onstart = () => {
     isRecording.value = true;
 
-    // 创建 MediaRecorder 进行音频录制
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = (event) => {
-      audioChunks.push(event.data);
-    };
-
-    mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(audioChunks, {type: 'audio/wav'});
-      sendAudioToApi(audioBlob); // 发送到 API
-    };
-
-    mediaRecorder.start();
-  } catch (error) {
-    console.error("无法访问麦克风:", error);
-    ErrorPop("Microphone access failed");
-  }
-};
-
-// 停止录音
-const stopRecording = () => {
-  if (mediaRecorder) {
-    mediaRecorder.stop();
-    mediaRecorder.stream.getTracks().forEach(track => track.stop());
-    isRecording.value = false;
-  }
-};
-
-// 发送音频到 API
-const sendAudioToApi = async (audioBlob: any) => {
-  isLoading.value = true;
-  result.value = "";
-
-  // 创建 FormData 对象
-  const form = new FormData();
-  form.append("language", "en");
-  form.append("ignore_timestamps", "true");
-  form.append("audio", audioBlob, "recording.wav");
-
-  // 配置 fetch 选项
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 7000); // 10秒后中止请求
-
-  const options = {
-    method: 'POST',
-    headers: {
-      Authorization: '',
-    },
-    body: form,
-    signal: controller.signal, // 将 AbortController 的 signal 传递给 fetch
   };
 
-  // 发送请求
-  try {
-    const response = await fetch(baseURL + '/speech/text', options);
-    clearTimeout(timeoutId); // 请求完成前清除定时器
-    const data = await response.json();
-    result.value = data.text || ErrorPop("No voice input detected"); // 假设 API 返回的识别文本字段是 text
-    console.log(result.value);
-    inputValue.value += data.text;
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      console.error("请求超时:", error);
-      ErrorPop("Request timed out");
-    } else {
-      console.error("请求失败:", error);
-      ErrorPop("Unrecognized");
-    }
-  } finally {
-    isLoading.value = false;
+  recognition.onresult = (event) => {
+    inputValue.value += event.results[0][0].transcript;
+  };
+
+  recognition.onerror = (event) => {
+    ErrorPop('语音识别出错，请重试');
+  };
+
+  recognition.onend = () => {
+    isRecording.value = false;
+  };
+} else {
+  console.warn('当前浏览器不支持语音识别');
+}
+
+// 开始语音识别
+const startRecognition = () => {
+
+  if (recognition) {
+    recognition.start();
+    console.log("开始语音识别")
+  } else {
+    ErrorPop('您的浏览器不支持语音识别');
+  }
+};
+
+// 停止语音识别
+const stopRecognition = () => {
+  if (recognition) {
+    console.log("停止语音识别")
+    recognition.stop();
   }
 };
 
@@ -187,11 +205,6 @@ const sendAudioToApi = async (audioBlob: any) => {
 //选择音频类型
 let audioType = ref("De");
 
-function handleCommand(command: string) {
-  console.log('Selected:', command);
-  audioType.value = command;
-  stateStore.setaudioType(command);
-}
 
 // 拖动框的逻辑
 interface Position {
@@ -204,7 +217,7 @@ interface Offset {
   y: number;
 }
 
-const position = reactive<Position>({x: window.innerWidth - 900, y: window.innerHeight - 150}) // 初始位置
+const position = reactive<Position>({x: window.innerWidth - 950, y: window.innerHeight - 250}) // 初始位置
 const offset = reactive<Offset>({x: 0, y: 0})
 let isDragging = ref<boolean>(false)
 const draggableContainer = ref<HTMLDivElement | null>(null)
@@ -251,6 +264,68 @@ const ErrorPop = (info: string, time = 3000) => {
     duration: time
   })
 }
+
+//图片的码
+let pic64 = ref("")
+//开始轮询
+const startQuest = async (info) => {
+  if (info.success) {
+    pic64.value = info.base64
+  }
+  console.log("开始");
+  startLoading();
+  pollGetRecord();
+}
+
+//轮询
+async function pollGetRecord(interval = 2000, startTime = Date.now()) {
+  try {
+    const responseData = await getRecordData();
+    const data = responseData.data;
+
+    if (data && data[data.length - 1].state === 1) {
+      const endTime = Date.now(); // 记录结束时间
+      const elapsedTime = (endTime - startTime) / 1000; // 计算总耗时（秒）
+
+      console.log("✅ 获取到符合条件的数据:", data[data.length - 1].result);
+      console.log(`🎯 轮询耗时: ${elapsedTime.toFixed(2)} 秒`);
+      const result = data[data.length - 1].result
+      let ans = ''
+
+      ans += tongueDictionary.color[result.tongue_color]
+      ans += tongueDictionary.outcolor[result.coating_color]
+      ans += tongueDictionary.thick[result.tongue_thickness]
+      ans += tongueDictionary.rot[result.rot_greasy]
+      console.log(ans)
+      emit("send-picture", {base64: pic64.value, ans: ans})
+      startChat();
+
+
+      return data[data.length - 1].result; // 返回数据并停止轮询
+    }
+
+    console.log("🔄 数据不符合条件，继续轮询...");
+    setTimeout(() => pollGetRecord(interval, startTime), interval); // 递归调用继续轮询
+  } catch (error) {
+    console.error("❌ 轮询获取数据失败:", error);
+    setTimeout(() => pollGetRecord(interval, startTime), interval); // 发生错误时继续轮询
+  }
+}
+
+//开始加载
+const startLoading = async () => {
+  isUploading.value = true
+  await nextTick()
+
+  resetLoading();
+}
+
+const startChat = () => {
+  sendPic.value = false
+  isUploading.value = false
+}
+
+
 </script>
 
 
@@ -258,7 +333,7 @@ const ErrorPop = (info: string, time = 3000) => {
 .draggable-container {
   display: flex;
   align-items: center;
-  width: 600px;
+  width: 550px;
   background-color: #f5f5f5;
   border-radius: 30px;
   padding: 10px;
@@ -301,7 +376,27 @@ const ErrorPop = (info: string, time = 3000) => {
   fill: #000;
 }
 
-.dropdown-button {
-  margin-left: 10px; /* 根据需求调整间距，例如10px */
+
+.upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* 控制左右箭头和 UploadPicture 之间的间距 */
 }
+
+.arrow-left, .arrow-right {
+  font-size: 24px;
+  color: #409eff; /* 调整箭头颜色 */
+  cursor: pointer;
+}
+
+.arrow-left:hover, .arrow-right:hover {
+  color: #66b1ff; /* 悬停时颜色变深 */
+}
+
+.input-container {
+  display: flex; /* 让子元素横向排列 */
+  align-items: center; /* 让子元素垂直居中 */
+  gap: 10px; /* 子元素之间的间距 */
+}
+
 </style>

@@ -13,7 +13,7 @@ export const useStateStore = defineStore('state', {
         isPlayed: false, // 检测是否已经播放过介绍页面
         gender: "male", // 性别
         personalPrompt: "", // 个人prompt
-        isShow: true // 演示模式
+        isShow: true, // 演示模式
     }),
     actions: {
         setisOpenValue(newValue) {

@@ -24,7 +24,17 @@
         <!-- 消息 -->
         <div v-else>
           <div v-if="!message.isUser" class="message-text markdown-body" v-html="renderedText(message.text)"></div>
-          <div v-else class="message-text">{{ message.text }}</div>
+          <div v-else class="message-text">
+            <div v-if="message.isPicture">
+              <img :src="message.text" alt="舌头图片"
+                   style="width: 200px; border: 1px solid #ddd; border-radius: 10px;"/>
+            </div>
+
+            <div v-else>
+              {{ message.text }}
+            </div>
+          </div>
+
         </div>
         <div class="message-time">{{ message.time }}
           <!-- 添加语音播放按钮 -->
@@ -44,7 +54,7 @@
 </template>
 
 <script setup>
-import {ref, nextTick, computed, onBeforeMount, createCommentVNode} from 'vue';
+import {ref, nextTick, computed, onBeforeMount, createCommentVNode, onMounted} from 'vue';
 import MarkdownIt from 'markdown-it'; //渲染markdown
 import hljs from 'highlight.js'; // 引入代码高亮库
 import 'github-markdown-css';
@@ -52,7 +62,38 @@ import {useStateStore} from "@/stores/stateStore"; //状态获取
 import 'highlight.js/styles/github.css'; // 确保引入样式文件
 import axios from 'axios';
 import emojiRegex from 'emoji-regex'; //去除emoji
-//图片
+
+
+//初始化图片和解答
+const initPage = (basePic, ans) => {
+  messages.value.push({
+    text: basePic,
+    isUser: true,
+    time: new Date().toLocaleString(),
+    loading: false,
+    isPicture: true
+  });
+  newMessage.value = "我是" + ans + "怎么办？"
+  sendAIMessage();
+
+
+}
+defineExpose({initPage})
+
+//获取记录
+async function getRecordData() {
+  try {
+    const response = await axios.get('/user/record', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+    console.log(response.data.data[response.data.data.length - 1].state); // 返回后端返回的数据
+  } catch (error) {
+    console.error('获取 /user/record 失败:', error);
+    return null; // 失败时返回 null
+  }
+}
 
 
 // 使用 ref 定义响应式变量
@@ -75,7 +116,8 @@ const messages = ref([
         "➡ **请上传舌像，让我们开始吧！**\n",
     isUser: false,
     time: '2024/10/11 16:39',
-    loading: false
+    loading: false,
+    isPicture: false
   }]);
 //loading用来记录是否正在加载
 
@@ -122,7 +164,8 @@ const sendMessage = async () => {
       text: newMessage.value,
       isUser: true,
       time: new Date().toLocaleString(),
-      loading: false
+      loading: false,
+      isPicture: false
     });
     //保存
     saveHistory();
@@ -146,7 +189,8 @@ const sendAIMessage = async () => {
         hour: '2-digit',
         minute: '2-digit'
       }),
-      loading: true
+      loading: true,
+      isPicture: false
     });
     await scrollToBottom();
     await getAnswer();
@@ -157,7 +201,6 @@ const sendAIMessage = async () => {
 
 
 const getAnswer = async () => {
-  console.log(baseURL);
   const timeout = 10000; // 设置超时时间（以毫秒为单位，例如10秒）
 
   const timeoutPromise = new Promise((_, reject) =>
@@ -255,79 +298,72 @@ watch(
     }
 );
 
-// 请求后端并播放音频功能
+const isPlaying = ref(false); // 记录是否正在播放
+
+// 请求播放音频功能
 const fetchAndPlayAudio = async (text) => {
-  text = org(text);
-  if (audioType === "De") speakMessage(text);
-  else {
-    SuccessPop("音频准备中...", 5000);
-    const startTime = performance.now();
-    try {
-      const formData = new FormData();
-      formData.append("text", text);
-      formData.append("id", audioType);
+  text = org(text); // 处理文本
 
-      const response = await axios.post(baseURL + '/text/speech', formData, {
-        responseType: 'blob'  // 指定返回类型为 Blob
-      });
-
-      if (!response || response.status !== 200) {
-        throw new Error('Failed to fetch audio');
-      }
-
-      // 将响应转化为一个声音 Blob
-      const audioBlob = response.data;
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      // closeSuccMessage();
-      SuccessPop("Playing...")
-      audio.play();
-
-      // 监听音频播放结束，释放 Blob URL
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);  // 释放 URL
-        console.log('Audio URL revoked');
-      };
-
-      const endTime = performance.now();
-      console.log(`Audio fetched and played in ${(endTime - startTime).toFixed(2) / 1000} seconds.`);
-    } catch (error) {
-      console.error('Failed to play audio:', error);
-      ErrorPop('Failed to play audio');
+  if (audioType === "De") {
+    if (isPlaying.value) {
+      stopAudio(); // 如果正在播放，则停止播放
+    } else {
+      playAudio(text);
     }
   }
 };
 
-//前端直接播放
-const speakMessage = (text) => {
-  console.time("SpeechSynthesis Start Time"); // 开始计时
+const voices = ref([]); // 存储可用的语音列表
 
-  const synth = window.speechSynthesis;
-  if (synth.speaking) {
-    console.error('SpeechSynthesis is already speaking.');
+// 加载可用的语音
+const loadVoices = () => {
+  voices.value = window.speechSynthesis.getVoices().filter(voice => voice.lang.startsWith("zh"));
+};
+
+onMounted(() => {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices; // 监听语音列表变化
+});
+
+// 停止当前正在播放的音频
+const stopAudio = () => {
+  window.speechSynthesis.cancel();
+  isPlaying.value = false; // 更新播放状态
+};
+
+const playAudio = (text) => {
+  if (!text) {
     return;
   }
 
-  if (text !== '') {
-    const utterThis = new SpeechSynthesisUtterance(text);
-    utterThis.onstart = () => {
-      console.timeEnd("SpeechSynthesis Start Time"); // 结束计时并打印耗时
-      console.log('SpeechSynthesisUtterance has started speaking.');
-    };
-    utterThis.onend = () => {
-      console.log('SpeechSynthesisUtterance has finished speaking.');
-    };
-    utterThis.onerror = (event) => {
-      console.error('SpeechSynthesisUtterance error: ', event);
-    };
+  const synth = window.speechSynthesis;
+  const utterance = new SpeechSynthesisUtterance(text);
 
-    // 选择语音 (可根据需要进行自定义)
-    const voices = synth.getVoices();
-    utterThis.voice = voices.find(voice => voice.lang === 'en-US') || voices[0];
-    synth.speak(utterThis);
+  // 设置语言为中文
+  utterance.lang = "zh-CN";
+
+  // 选择音色，确保数组索引不越界
+  if (voices.value.length > 6) {
+    utterance.voice = voices.value[6];
   }
 
+  // 监听播放开始和结束事件
+  utterance.onstart = () => {
+    isPlaying.value = true;
+  };
+
+  utterance.onend = () => {
+    isPlaying.value = false;
+  };
+
+  utterance.onerror = () => {
+    isPlaying.value = false;
+  };
+
+  // 播放音频
+  synth.speak(utterance);
 };
+
 
 //头像载入和音频初始化和url初始化
 let baseURL = ""
@@ -362,7 +398,7 @@ const props = defineProps({
 // 监听 props 的变化
 watch(() => props.receivedInput[0], (newValue) => {
   if (newValue !== undefined) {
-    const firstValue = props.receivedInput[1]; // 获取第2个值
+    const firstValue = props.receivedInput.slice(2); // 获取第2个值
     handleReceivedInput(firstValue); // 对第2个值进行操作
   }
 });
@@ -404,12 +440,6 @@ const deleteMessage = (index) => {
   //保存
   saveHistory();
 };
-
-//web speech api
-// const synth = window.speechSynthesis;
-// onBeforeUnmount(() => {
-//   synth.cancel(); // 取消任何正在进行的语音播放
-// });
 
 
 </script>

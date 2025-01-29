@@ -33,21 +33,21 @@ onBeforeMount(() => {
         }
       })
       .then(function (res) {
-        console.log(res.data.code)
+        // console.log(res.data.code)
         isl.value = res.data.code;
-        console.log(isl.value);
+        // console.log(isl.value);
       })
       .catch(function (error) {
-        console.log(error);
+        // console.log(error);
         router.push('/register')
       });
 });
 
 function logout() {
   window.localStorage.removeItem('token')
-  console.log("登出成功")
+  // console.log("登出成功")
   window.location.reload()
-  console.log("刷新成功")
+  // console.log("刷新成功")
 }
 </script>
 
