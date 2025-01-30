@@ -217,7 +217,7 @@ interface Offset {
   y: number;
 }
 
-const position = reactive<Position>({x: window.innerWidth - 950, y: window.innerHeight - 250}) // 初始位置
+const position = reactive<Position>({x: window.innerWidth - 850, y: window.innerHeight - 250}) // 初始位置
 const offset = reactive<Offset>({x: 0, y: 0})
 let isDragging = ref<boolean>(false)
 const draggableContainer = ref<HTMLDivElement | null>(null)

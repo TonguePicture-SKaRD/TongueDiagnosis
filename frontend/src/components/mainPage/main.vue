@@ -75,6 +75,7 @@ const initPage = (basePic, ans) => {
   });
   newMessage.value = "我是" + ans + "怎么办？"
   sendAIMessage();
+  personalPrompt = ans;
 
 
 }
@@ -93,6 +94,37 @@ async function getRecordData() {
     console.error('获取 /user/record 失败:', error);
     return null; // 失败时返回 null
   }
+}
+
+//重置全部
+const resetPage=()=>{
+  messages.value = [
+    {
+      text: "# 👋 欢迎来到 **AI 中医舌诊**！\n" +
+          "\n" +
+          "📸 **请首先上传您的舌像图片**，AI 将根据中医理论进行智能分析，提供健康建议。\n" +
+          "\n" +
+          "🔍 **如何拍摄舌像？**\n" +
+          "1. 在自然光下拍摄，避免过暗或过亮。\n" +
+          "2. 放松舌头，尽量伸出，不要用力。\n" +
+          "3. 保持清洁，避免食物残留影响判断。\n" +
+          "\n" +
+          "💡 **免责声明**  \n" +
+          "本系统提供的分析结果仅供参考，不能替代专业医生的诊断，如有健康问题，请咨询中医师或专业医生。\n" +
+          "\n" +
+          "➡ **请上传舌像，让我们开始吧！**\n",
+      isUser: false,
+      time: new Date().toLocaleString('default', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      loading: false,
+      isPicture: false
+    }
+  ];
 }
 
 
@@ -115,7 +147,13 @@ const messages = ref([
         "\n" +
         "➡ **请上传舌像，让我们开始吧！**\n",
     isUser: false,
-    time: '2024/10/11 16:39',
+    time: new Date().toLocaleString('default', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }),
     loading: false,
     isPicture: false
   }]);
@@ -163,7 +201,13 @@ const sendMessage = async () => {
     messages.value.push({
       text: newMessage.value,
       isUser: true,
-      time: new Date().toLocaleString(),
+      time: new Date().toLocaleString('default', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
       loading: false,
       isPicture: false
     });
@@ -218,7 +262,7 @@ const getAnswer = async () => {
         },
         body: JSON.stringify({
           model: "qwen2.5:0.5b",
-          prompt: newMessage.value,
+          prompt: personalPrompt + newMessage.value,
         }),
       }),
       timeoutPromise, // 如果 fetch 未完成，此 promise 将优先返回超时错误
@@ -265,9 +309,9 @@ const getAnswer = async () => {
     console.error("错误: ", error);
     messages.value.pop(); //直接删去最后一个
     if (error.message === "请求超时") {
-      ErrorPop("Timeout");
+      ErrorPop("请求超时，请重试");
     } else {
-      ErrorPop("404 Warning");
+      ErrorPop("出错请重试");
     }
   }
   //保存
