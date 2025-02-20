@@ -14,7 +14,7 @@ from ..net.predict import TonguePredictor
 
 router_tongue_analysis = APIRouter()
 
-@router_tongue_analysis.post('/session', response_model=schemas.UploadResponse)
+@router_tongue_analysis.post('/upload', response_model=schemas.UploadResponse)
 async def upload(file_data: UploadFile,
                  user: schemas.UserBase = Depends(get_current_user),
                  db: Session = Depends(get_db)

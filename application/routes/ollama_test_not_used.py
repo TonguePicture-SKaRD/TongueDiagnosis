@@ -1,6 +1,5 @@
 import requests
 import json
-from ..orm import get_chat_record
 
 
 class OllamaStreamChatter:
