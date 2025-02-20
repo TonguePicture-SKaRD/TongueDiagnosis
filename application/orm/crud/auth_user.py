@@ -1,6 +1,6 @@
 import hashlib
 from sqlalchemy.orm import Session
-from application.models import models
+from ...models import models
 
 
 def register_user(email: str, password: str, db: Session):

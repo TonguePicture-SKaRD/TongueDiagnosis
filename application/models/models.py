@@ -2,7 +2,7 @@
 定义数据库模型
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -50,3 +50,26 @@ class TongueAnalysis(Base):
     rot_greasy = Column(Integer)
     # 定义与User表的外键关联关系
     user = relationship('User')
+
+
+class ChatSession(Base):
+    __tablename__ = "chatSession"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("User.id"))
+    title = Column(String)
+
+    user = relationship("User")
+    chat_records = relationship("ChatRecord")
+
+
+class ChatRecord(Base):
+    __tablename__ = "chatRecord"
+
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("chatSession.id"))
+    content = Column(String)
+    create_at = Column(Integer)
+    role = Column(Integer)
+
+    session = relationship("ChatSession")
