@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from ...models import models
 from datetime import datetime
+import time
 
 def get_chat_record(ID: int, sessionid: int, db: Session):
     """
@@ -44,3 +45,40 @@ def get_all_chat_id(ID: int, db: Session):
     return db.query(models.ChatSession).filter(
         models.ChatSession.user_id == ID
     ).order_by(models.ChatSession.id).all()
+
+def get_result(img_src: str, db: Session):
+    result = db.query(models.TongueAnalysis).filter(models.TongueAnalysis.img_src == img_src).first()
+    db.refresh(result)  # 强制刷新查询结果，确保是最新的
+    print(result.state)  # 打印结果的状态
+    return result
+
+def create_new_session(db: Session,
+                       ID: int,
+                       tittle: str
+                       ):
+    new_message = models.ChatSession(
+        tittle=tittle,
+        user_id=ID
+    )
+    db.add(new_message)
+    db.commit()
+    db.refresh(new_message)
+    return new_message
+
+def create_new_chat_records(db: Session,
+                            session_id: int,
+                            content: str,
+                            role: int
+                       ):
+    millis_timestamp = int(time.time() * 1000)
+    print(millis_timestamp)
+    new_message = models.ChatRecord(
+        session_id=session_id,
+        content=content,
+        create_at=millis_timestamp,
+        role=role
+    )
+    db.add(new_message)
+    db.commit()
+    db.refresh(new_message)
+    return new_message

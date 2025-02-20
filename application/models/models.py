@@ -57,7 +57,7 @@ class ChatSession(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("User.id"))
-    title = Column(String)
+    tittle = Column(String)
 
     user = relationship("User")
     chat_records = relationship("ChatRecord")
