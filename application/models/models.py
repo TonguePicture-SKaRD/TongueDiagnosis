@@ -69,7 +69,7 @@ class ChatRecord(Base):
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("chatSession.id"))
     content = Column(String)
-    create_at = Column(Integer)
+    create_at = Column(Integer, nullable=False)
     role = Column(Integer)
 
     session = relationship("ChatSession")

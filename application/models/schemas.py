@@ -2,8 +2,9 @@
 这个文件包含了所有的请求和响应的Pydantic模型
 供后续的API路由使用
 """
+import time
 
-from pydantic import BaseModel
+from pydantic import BaseModel,Field
 from typing import Union, Annotated, Optional
 from fastapi.param_functions import Form
 from typing import List
@@ -152,7 +153,7 @@ class ExtendedOAuth2PasswordRequestForm:
 
 class ChatRecordResponse(BaseModel):
     content: str
-    create_at: int
+    create_at: int = Field(default_factory=lambda: int(time.time() * 1000))
     role: int
 
 class ChatSessionRecordsResponse(BaseModel):

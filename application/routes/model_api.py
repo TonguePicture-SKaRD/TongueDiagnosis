@@ -71,7 +71,7 @@ def format_tongue_features(tongue_color,
 
 @router_tongue_analysis.post('/session/{sessionId}')
 async def upload(sessionId: int,
-                 # user_input: str,
+                 user_input: str,
                  user: schemas.UserBase = Depends(get_current_user),
                  db: Session = Depends(get_db),
                  ):
@@ -82,7 +82,7 @@ async def upload(sessionId: int,
             data=None
         )
     else:
-        user_input = "告诉我我的体质怎么样"
+        # user_input = "告诉我我的体质怎么样"
         bot = OllamaStreamChatter(
             model="deepseek-r1:14b",
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
@@ -215,14 +215,14 @@ async def get_chat_records_by_session(sessionid: int,
         else:
             records = []
             for record in chat_record:
-                if isinstance(record.create_at, datetime):
-                    timestamp = int(record.create_at.timestamp())
-                else:
-                    timestamp = None  # 如果 create_at 不是有效的 datetime，设置为 None 或默认值
+                # if isinstance(record.create_at, datetime):
+                #     timestamp = int(record.create_at.timestamp())
+                # else:
+                #     timestamp = None  # 如果 create_at 不是有效的 datetime，设置为 None 或默认值
 
                 records.append(schemas.ChatRecordResponse(
                     content=record.content,
-                    create_at=timestamp,
+                    create_at=record.create_at,
                     role=record.role
                 ))
             data_temp = {

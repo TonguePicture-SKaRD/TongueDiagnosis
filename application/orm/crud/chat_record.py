@@ -25,14 +25,12 @@ def get_chat_record(ID: int, sessionid: int, db: Session):
 
     if not chat_records:
         return 103  # No chat records found
-    # 将毫秒时间戳转换为 datetime
-    for record in chat_records:
-
-        if isinstance(record.create_at, int):  # 确保它是一个整数时间戳
-            record.create_at = datetime.fromtimestamp(record.create_at / 1000)  # 转换为秒级时间戳
-        else:
-            record.create_at = None  # 如果不是有效的时间戳，设置为 None 或者默认值
-
+    # # 将毫秒时间戳转换为 datetime
+    # for record in chat_records:
+    #     if isinstance(record.create_at, int):  # 确保它是一个整数时间戳
+    #     record.create_at = datetime.fromtimestamp(record.create_at)  # 转换为秒级时间戳
+    #     else:
+    #         record.create_at = None  # 如果不是有效的时间戳，设置为 None 或者默认值
     return chat_records
 
 def get_all_chat_id(ID: int, db: Session):
