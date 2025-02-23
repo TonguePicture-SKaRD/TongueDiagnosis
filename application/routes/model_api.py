@@ -1,7 +1,8 @@
 import os
 import time
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, UploadFile, Body
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime
 from tempfile import SpooledTemporaryFile
@@ -68,10 +69,11 @@ def format_tongue_features(tongue_color,
         missing_key = int(str(e).split("'")[1])
         return f"错误：检测到无效特征值 {missing_key}，请检查输入范围"
 
-
+class UserInput(BaseModel):
+    input: str
 @router_tongue_analysis.post('/session/{sessionId}')
 async def upload(sessionId: int,
-                 user_input: str,
+                 user_input: UserInput,
                  user: schemas.UserBase = Depends(get_current_user),
                  db: Session = Depends(get_db),
                  ):
@@ -87,7 +89,7 @@ async def upload(sessionId: int,
             model="deepseek-r1:14b",
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
         )
-        create_new_chat_records(db=db, content=user_input, session_id=sessionId, role=1)
+        create_new_chat_records(db=db, content=user_input.input, session_id=sessionId, role=1)
         return StreamingResponse(bot.chat_stream_add(user.id, db, sessionId),
                                  media_type='text/event-stream')
 
