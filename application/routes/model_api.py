@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from tempfile import SpooledTemporaryFile
 from fastapi.responses import StreamingResponse
-
+import json
+from typing import Generator
 
 from .ollama_used import OllamaStreamChatter
 from ..core import get_current_user
@@ -69,6 +70,60 @@ def format_tongue_features(tongue_color,
         missing_key = int(str(e).split("'")[1])
         return f"错误：检测到无效特征值 {missing_key}，请检查输入范围"
 
+# 修改后的流式生成器
+# def generate_json_stream(user_id: int, bot, db: Session, session_id: int) -> Generator[str, None, None]:
+#     try:
+#         # 假设 bot.chat_stream_add 返回原始 token 生成器
+#         raw_stream = bot.chat_stream_add(user_id, db, session_id)
+#
+#         for token in raw_stream:
+#             # 包装为 JSON 并添加换行符（符合 ndjson 规范）
+#             yield json.dumps({
+#                 "token": token,
+#                 "session_id": session_id,
+#                 "status": "streaming"
+#             }) + "\n"
+#
+#         # 流结束时发送完成标记
+#         yield json.dumps({
+#             "status": "completed",
+#             "session_id": session_id
+#         }) + "\n"
+#
+#     except Exception as e:
+#         # 错误处理
+#         yield json.dumps({
+#             "error": str(e),
+#             "status": "failed",
+#             "session_id": session_id
+#         }) + "\n"
+#
+# def generate_json_stream_1(user_input: str,user_id: int, bot, feature: str,db: Session, session_id: int) -> Generator[str, None, None]:
+#     try:
+#         # 假设 bot.chat_stream_add 返回原始 token 生成器
+#         raw_stream = bot.chat_stream_first(user_input, feature, user_id, db, session_id)
+#
+#         for token in raw_stream:
+#             # 包装为 JSON 并添加换行符（符合 ndjson 规范）
+#             yield json.dumps({
+#                 "token": token,
+#                 "session_id": session_id,
+#                 "status": "streaming"
+#             }) + "\n"
+#
+#         # 流结束时发送完成标记
+#         yield json.dumps({
+#             "status": "completed",
+#             "session_id": session_id
+#         }) + "\n"
+#
+#     except Exception as e:
+#         # 错误处理
+#         yield json.dumps({
+#             "error": str(e),
+#             "status": "failed",
+#             "session_id": session_id
+#         }) + "\n"
 class UserInput(BaseModel):
     input: str
 @router_tongue_analysis.post('/session/{sessionId}')
@@ -90,8 +145,10 @@ async def upload(sessionId: int,
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
         )
         create_new_chat_records(db=db, content=user_input.input, session_id=sessionId, role=1)
-        return StreamingResponse(bot.chat_stream_add(user.id, db, sessionId),
-                                 media_type='text/event-stream')
+        return StreamingResponse(
+            bot.chat_stream_add(user.id, db, sessionId),
+            media_type='application/x-ndjson'  # 修改媒体类型
+        )
 
 class inputPicture(BaseModel):
     file_data: UploadFile
@@ -178,7 +235,10 @@ async def upload(inputPic: inputPicture,
         new_message = create_new_session(ID=user.id, db=db, tittle=feature)
         session_new_id = new_message.id
         create_new_chat_records(db=db, content=inputPic.user_input, session_id=session_new_id, role=1)
-        return StreamingResponse(bot.chat_stream_first(inputPic.user_input, feature, user.id, db, session_new_id), media_type='text/event-stream')
+        return StreamingResponse(
+            bot.chat_stream_first(inputPic.user_input, feature, user.id, db, session_new_id),
+            media_type='application/x-ndjson'  # 修改媒体类型
+        )
     else:
         return schemas.UploadResponse(
             code=201,

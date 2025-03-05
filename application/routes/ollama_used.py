@@ -1,5 +1,8 @@
 import requests
 import json
+
+from starlette.responses import JSONResponse, StreamingResponse
+
 from ..orm import create_new_chat_records, get_chat_record
 from datetime import datetime
 from ..models import schemas
@@ -70,64 +73,75 @@ class OllamaStreamChatter:
         return full_response
 
     def chat_stream_add(self, id, db, session_id):
-        """流式对话（逐字输出）"""
+        """流式对话（返回 JSON 块）"""
+        # 获取历史记录（保持原逻辑）
         chat_record = get_chat_record(ID=id, sessionid=session_id, db=db)
         records = []
         for record in chat_record:
-            if record.role == 1:
-                message = {
-                    "role":"user",
-                    "content":record.content
-                }
-            else:
-                message = {
-                    "role": "assistant",
-                    "content": record.content
-                }
-            records.append(message)
+            role = "user" if record.role == 1 else "assistant"
+            records.append({"role": role, "content": record.content})
         self.messages = records
+
         # 构建请求数据
         data = {
             "model": self.model,
             "messages": self.messages,
-            "stream": True  # 启用流式传输
+            "stream": True
         }
 
-        full_response = ""
         try:
-            # 发起流式请求
-            response = requests.post(
-                self.url,
-                headers=self.headers,
-                json=data,
-                stream=True
-            )
+            response = requests.post(self.url, headers=self.headers, json=data, stream=True)
             response.raise_for_status()
 
-            # 处理流式响应
-            print("Assistant: ", end="", flush=True)
-            for line in response.iter_lines():
-                if line:
-                    # 解析数据块
-                    chunk = json.loads(line.decode('utf-8'))
-                    if 'message' in chunk:
-                        content = chunk['message']['content']
-                        # 实时逐字输出
-                        print(content, end="", flush=True)
-                        full_response += content
+            def generate():
+                full_response = ""
+                for line in response.iter_lines():
+                    if line:
+                        chunk = json.loads(line.decode('utf-8'))
+                        if 'message' in chunk:
+                            content = chunk['message']['content']
+                            full_response += content
+                            # 将每个 token 包装为 JSON 并添加换行符
+                            yield json.dumps({
+                                "token": content,
+                                "session_id": session_id,
+                                "is_complete": False
+                            }) + "\n"
+                # 流结束时发送完成标记
+                yield json.dumps({
+                    "token": full_response,
+                    "session_id": session_id,
+                    "is_complete": True
+                }) + "\n"
+                # 异步保存到数据库（避免阻塞流式传输）
+                self._save_to_db_async(db, full_response, session_id)
 
-            # 将完整回复加入历史
-            self.messages.append({
-                "role": "assistant",
-                "content": full_response
-            })
-            create_new_chat_records(db=db, content=full_response, session_id=session_id, role=2)
+            return StreamingResponse(
+                generate(),
+                media_type='application/x-ndjson'  # 使用流式 JSON 媒体类型
+            )
 
         except requests.exceptions.RequestException as e:
-            print(f"\n请求失败: {str(e)}")
-            return None
+            return JSONResponse(
+                status_code=500,
+                content={"error": f"请求失败: {str(e)}"}
+            )
 
-        return full_response
+    def _save_to_db_async(self, db, content, session_id):
+        # 异步保存到数据库（示例使用线程池）
+        import threading
+        def save_task():
+            try:
+                create_new_chat_records(
+                    db=db,
+                    content=content,
+                    session_id=session_id,
+                    role=2
+                )
+            except Exception as e:
+                print(f"数据库保存失败: {e}")
+
+        threading.Thread(target=save_task).start()
 
 
 # # 使用示例 ============================================
