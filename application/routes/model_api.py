@@ -153,6 +153,7 @@ async def upload(sessionId: int,
 class inputPicture(BaseModel):
     file_data: UploadFile
     user_input: str
+    name: str
 @router_tongue_analysis.post('/session')
 async def upload(inputPic: inputPicture,
                  user: schemas.UserBase = Depends(get_current_user),
@@ -232,7 +233,7 @@ async def upload(inputPic: inputPicture,
             model="deepseek-r1:14b",
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
         )
-        new_message = create_new_session(ID=user.id, db=db, tittle=feature)
+        new_message = create_new_session(ID=user.id, db=db, tittle=inputPic.name)
         session_new_id = new_message.id
         create_new_chat_records(db=db, content=inputPic.user_input, session_id=session_new_id, role=1)
         return StreamingResponse(
