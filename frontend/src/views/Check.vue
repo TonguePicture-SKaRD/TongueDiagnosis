@@ -35,10 +35,11 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, watch} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Header from "@/components/Header.vue";
 import Main from "@/components/mainPage/mainContainer.vue";
 import {Delete as ElIconDelete} from '@element-plus/icons-vue';
+import axios from "axios";
 
 // 选中的项
 const activeItem = ref<string | null>(null);
@@ -97,6 +98,21 @@ const removeItem = (targetId: string) => {
     activeItem.value = items.value.length ? items.value[0].id : null;
   }
 };
+
+onMounted(() => {
+  // 获取所有session
+  axios.get("/user/record", {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
+    }, timeout: 3000
+  }).then(res => {
+    console.log(res.data.data)
+    items.value = res.data.data
+  }).catch(error => {
+    console.log(error);
+  })
+})
+;
 </script>
 
 
@@ -181,6 +197,7 @@ const removeItem = (targetId: string) => {
 .delete-icon:hover {
   color: red;
 }
+
 .main-container {
   flex: 1;
   padding: 0;
