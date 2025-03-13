@@ -1,7 +1,7 @@
 import os
 import time
 
-from fastapi import APIRouter, Depends, UploadFile, Body
+from fastapi import APIRouter, Depends, UploadFile, Body, Form, File
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -141,7 +141,6 @@ async def upload(sessionId: int,
     else:
         # user_input = "告诉我我的体质怎么样"
         bot = OllamaStreamChatter(
-            model="qwen:0.5b",
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
         )
         create_new_chat_records(db=db, content=user_input.input, session_id=sessionId, role=1)
@@ -152,7 +151,9 @@ class inputPicture(BaseModel):
     user_input: str
     name: str
 @router_tongue_analysis.post('/session')
-async def upload(inputPic: inputPicture,
+async def upload(file_data: UploadFile = File(...),
+                user_input: str = Form(...),
+                name: str = Form(...),
                  user: schemas.UserBase = Depends(get_current_user),
                  db: Session = Depends(get_db)
                  ):
@@ -187,11 +188,11 @@ async def upload(inputPic: inputPicture,
 
     # 保存图片
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_extension = os.path.splitext(inputPic.file_data.filename)[1]
+    file_extension = os.path.splitext(file_data.filename)[1]
     filename = f"{timestamp}{file_extension}"
     file_location = f"{Settings.IMG_PATH}/{filename}"
     with open(file_location, "wb") as f:
-        contents = await inputPic.file_data.read()
+        contents = await file_data.read()
         f.write(contents)
     f.close()
 
@@ -202,7 +203,7 @@ async def upload(inputPic: inputPicture,
     # 模型调用
     if code == 0:  #成果分析结果
         record = get_record_by_location(img_db_path, db=db)
-        analysis(img=inputPic.file_data.file, record_id=record.id, function=write_result)
+        analysis(img=file_data.file, record_id=record.id, function=write_result)
         #从这里开始会有很长一段时间的模型运行时间
         while True:
             print(111)
@@ -225,15 +226,14 @@ async def upload(inputPic: inputPicture,
         #此时4个特征都出来了
         feature = format_tongue_features(tongue_color,coating_color,tongue_thickness,rot_greasy)
         #接下来开始对接deepseek
-        # user_input = "告诉我我的体质怎么样"
+        # user_input = "告诉我我的体质怎么样
         bot = OllamaStreamChatter(
-            model="qwen:0.5b",
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
         )
-        new_message = create_new_session(ID=user.id, db=db, tittle=inputPic.name)
+        new_message = create_new_session(ID=user.id, db=db, tittle=name)
         session_new_id = new_message.id
-        create_new_chat_records(db=db, content=inputPic.user_input, session_id=session_new_id, role=1)
-        return bot.chat_stream_first(inputPic.user_input, feature, user.id, db, session_new_id)
+        create_new_chat_records(db=db, content=user_input, session_id=session_new_id, role=1)
+        return bot.chat_stream_first(user_input, feature, user.id, db, session_new_id)
     else:
         return schemas.UploadResponse(
             code=201,

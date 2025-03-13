@@ -1,6 +1,6 @@
 import requests
 import json
-
+from ..models import models
 from starlette.responses import JSONResponse, StreamingResponse
 
 from ..orm import create_new_chat_records, get_chat_record
@@ -9,7 +9,7 @@ from ..models import schemas
 
 
 class OllamaStreamChatter:
-    def __init__(self, model="deepseek-r1:14b",
+    def __init__(self, model="gemma2:2b",
                  system_prompt=None
                  ):
         self.url = "http://localhost:11434/api/chat"
@@ -28,7 +28,8 @@ class OllamaStreamChatter:
         """流式对话（逐字输出）"""
         # 添加用户消息到历史
         self.messages = []
-        self.messages.append({"role": "user", "content": "舌象特征是"+feature+","+user_input})
+        self.messages.append({"role": "user", "content": "舌象特征是" + feature + "," + user_input})
+
         # 构建请求数据
         data = {
             "model": self.model,
@@ -36,7 +37,6 @@ class OllamaStreamChatter:
             "stream": True  # 启用流式传输
         }
 
-        full_response = ""
         try:
             # 发起流式请求
             response = requests.post(
@@ -47,30 +47,40 @@ class OllamaStreamChatter:
             )
             response.raise_for_status()
 
-            # 处理流式响应
-            print("Assistant: ", end="", flush=True)
-            for line in response.iter_lines():
-                if line:
-                    # 解析数据块
-                    chunk = json.loads(line.decode('utf-8'))
-                    if 'message' in chunk:
-                        content = chunk['message']['content']
-                        # 实时逐字输出
-                        print(content, end="", flush=True)
-                        full_response += content
+            def generate():
+                full_response = ""
+                for line in response.iter_lines():
+                    if line:
+                        # 解析数据块
+                        chunk = json.loads(line.decode('utf-8'))
+                        if 'message' in chunk:
+                            content = chunk['message']['content']
+                            full_response += content
+                            # 将每个 token 包装为 JSON 并添加换行符
+                            yield json.dumps({
+                                "token": content,
+                                "session_id": session_new_id,
+                                "is_complete": False
+                            }) + "\n"
+                # 流结束时发送完成标记
+                yield json.dumps({
+                    "token": full_response,
+                    "session_id": session_new_id,
+                    "is_complete": True
+                }) + "\n"
+                # 异步保存到数据库（保持原有功能）
+                self._save_to_db_async(db, full_response, session_new_id)
 
-            # 将完整回复加入历史
-            self.messages.append({
-                "role": "assistant",
-                "content": full_response
-            })
-            create_new_chat_records(db=db, content=full_response, session_id=session_new_id, role=2)
+            return StreamingResponse(
+                generate(),
+                media_type='application/x-ndjson'
+            )
 
         except requests.exceptions.RequestException as e:
-            print(f"\n请求失败: {str(e)}")
-            return None
-
-        return full_response
+            return JSONResponse(
+                status_code=500,
+                content={"error": f"请求失败: {str(e)}"}
+            )
 
     def chat_stream_add(self, id, db, session_id):
         """流式对话（返回 JSON 块）"""
