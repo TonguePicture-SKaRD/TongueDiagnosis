@@ -41,43 +41,57 @@ function PicOnLoad(file) {
 }
 
 async function handleSuccess(event) {
-  let formData = new FormData();
-  formData.append('file_data', e.raw);
+  if (!e || !e.raw) {
+    console.error("未找到要上传的文件");
+    return;
+  }
 
-  axios.post('/model/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'Authorization': 'Bearer ' + localStorage.getItem('token')
-    },
-    timeout: 30000 // ⏳ 设置超时时间 30 秒
-  }).then(res => {
-    console.log("图像上传成功");
+  //
+  // let formData = new FormData();
+  // formData.append('file_data', e.raw);
 
-    // 触发事件，传递上传成功状态和 Base64 数据
-    emit("success", {success: true, base64: base64String});
 
-    ElMessage({
-      showClose: true,
-      message: '上传成功，请等待约30秒',
-      type: 'success',
-    });
-  }).catch(error => {
-    if (error.code === 'ECONNABORTED') {
-      console.log('上传超时');
-      ElMessage({
-        showClose: true,
-        message: '上传超时，请检查网络并重试',
-        type: 'error',
-      });
-    } else {
-      console.log(error);
-      ElMessage({
-        showClose: true,
-        message: '图片上传失败，请确认网络环境',
-        type: 'error',
-      });
-    }
-  });
+  setTimeout(() => {
+    // console.log("上传的文件：", base64String);
+    console.log("上传的文件：", e.raw);
+    emit("success", {success: true, base64: base64String, fileData: e.raw});
+  }, 600);
+  // emit("success", {success: true, base64: base64String});
+
+  // axios.post('/model/upload', formData, {
+  //   headers: {
+  //     'Content-Type': 'multipart/form-data',
+  //     'Authorization': 'Bearer ' + localStorage.getItem('token')
+  //   },
+  //   timeout: 30000 // ⏳ 设置超时时间 30 秒
+  // }).then(res => {
+  //   console.log("图像上传成功");
+  //
+  //   // 触发事件，传递上传成功状态和 Base64 数据
+  //   emit("success", {success: true, base64: base64String});
+  //
+  //   ElMessage({
+  //     showClose: true,
+  //     message: '上传成功，请等待约30秒',
+  //     type: 'success',
+  //   });
+  // }).catch(error => {
+  //   if (error.code === 'ECONNABORTED') {
+  //     console.log('上传超时');
+  //     ElMessage({
+  //       showClose: true,
+  //       message: '上传超时，请检查网络并重试',
+  //       type: 'error',
+  //     });
+  //   } else {
+  //     console.log(error);
+  //     ElMessage({
+  //       showClose: true,
+  //       message: '图片上传失败，请确认网络环境',
+  //       type: 'error',
+  //     });
+  //   }
+  // });
 }
 </script>
 

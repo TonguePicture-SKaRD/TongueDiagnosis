@@ -181,7 +181,7 @@ const analyze_response = (data: any) => {
       fail_message("用户不存在")
       not_register.value = true
     } else {
-      if (data.code = 102) {
+      if (data.code === 102) {
         fail_message("密码错误")
       } else {
         fail_message("出错请重试")

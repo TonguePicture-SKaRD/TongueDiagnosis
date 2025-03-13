@@ -267,14 +267,15 @@ const ErrorPop = (info: string, time = 3000) => {
 
 //图片的码
 let pic64 = ref("")
-//开始轮询
+//开始查询
 const startQuest = async (info) => {
   if (info.success) {
     pic64.value = info.base64
   }
   console.log("开始");
+  emit("send-picture", {base64: pic64.value,fileData: info.fileData})
   startLoading();
-  pollGetRecord();
+  // pollGetRecord();
 }
 
 //轮询
@@ -312,11 +313,16 @@ async function pollGetRecord(interval = 2000, startTime = Date.now()) {
   }
 }
 
+//恢复上传界面
+const backUploading = () => {
+  sendPic.value = true
+  isUploading.value = false
+}
+
 //开始加载
 const startLoading = async () => {
   isUploading.value = true
   await nextTick()
-
   resetLoading();
 }
 
@@ -325,7 +331,12 @@ const startChat = () => {
   isUploading.value = false
 }
 
-
+//得到回复
+const getReturn = (data) => {
+  if (data.success) startChat()
+  else backUploading()
+}
+defineExpose({startChat, startLoading, backUploading, getReturn})
 </script>
 
 

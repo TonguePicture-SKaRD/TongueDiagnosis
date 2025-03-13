@@ -54,7 +54,8 @@
 </template>
 
 <script setup>
-import {ref, nextTick, computed, onBeforeMount, createCommentVNode, onMounted} from 'vue';
+// 一再接受inputValue
+import {nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
 import MarkdownIt from 'markdown-it'; //渲染markdown
 import hljs from 'highlight.js'; // 引入代码高亮库
 import 'github-markdown-css';
@@ -62,24 +63,41 @@ import {useStateStore} from "@/stores/stateStore"; //状态获取
 import 'highlight.js/styles/github.css'; // 确保引入样式文件
 import axios from 'axios';
 import emojiRegex from 'emoji-regex'; //去除emoji
+import {ElMessage} from "element-plus";
+
+const sessionId = ref() //会话id
 
 
 //初始化图片和解答
-const initPage = (basePic, ans) => {
+const initPage = (basePic, sessionName) => {
   messages.value.push({
-    text: basePic,
+    text: basePic.base64,
     isUser: true,
-    time: new Date().toLocaleString(),
+    time: new Date().toLocaleString('default', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }),
     loading: false,
     isPicture: true
   });
-  newMessage.value = "我是" + ans + "怎么办？"
-  sendAIMessage();
-  personalPrompt = ans;
-
+  getPictureAnswer(basePic.fileData, sessionName);
 
 }
-defineExpose({initPage})
+
+//后端返回的数据注入
+const inputData = (data, id) => {
+  // console.log(id)
+  sessionId.value = id;
+  messages.value = data;
+  setTimeout(() => {
+    scrollToBottom()
+  }, 500)
+
+}
+
 
 //获取记录
 async function getRecordData() {
@@ -97,7 +115,7 @@ async function getRecordData() {
 }
 
 //重置全部
-const resetPage=()=>{
+const resetPage = () => {
   messages.value = [
     {
       text: "# 👋 欢迎来到 **AI 中医舌诊**！\n" +
@@ -126,6 +144,8 @@ const resetPage=()=>{
     }
   ];
 }
+
+defineExpose({initPage, inputData, resetPage})
 
 
 // 使用 ref 定义响应式变量
@@ -247,6 +267,9 @@ const sendAIMessage = async () => {
 const getAnswer = async () => {
   const timeout = 10000; // 设置超时时间（以毫秒为单位，例如10秒）
 
+  // 从 localStorage 获取 token
+  let token = localStorage.getItem('token');
+
   const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("请求超时")), timeout)
   );
@@ -255,18 +278,22 @@ const getAnswer = async () => {
     scrollToBottom();
 
     const response = await Promise.race([
-      fetch(baseURL, {
+      fetch(baseURL + sessionId.value, { // 注意这里去掉了多余的 +
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // 添加 Authorization 头
         },
         body: JSON.stringify({
-          model: "qwen2.5:0.5b",
-          prompt: personalPrompt + newMessage.value,
+          input: personalPrompt + newMessage.value,
         }),
       }),
       timeoutPromise, // 如果 fetch 未完成，此 promise 将优先返回超时错误
     ]);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     if (!response.body) {
       throw new Error("流式返回没有body");
@@ -284,8 +311,9 @@ const getAnswer = async () => {
 
       if (value) {
         // 解码数据块并按行分割
+        // console.log("value", value);
         const chunk = decoder.decode(value, {stream: true});
-        // console.log("chunk",chunk);
+        // console.log("chunk", chunk);
         const lines = chunk.split("\n");
 
         // 逐行解析并处理
@@ -293,7 +321,7 @@ const getAnswer = async () => {
           if (line.trim()) { // 忽略空行
             try {
               const parsedChunk = JSON.parse(line);
-              messages.value[messages.value.length - 1].text += parsedChunk.response;
+              messages.value[messages.value.length - 1].text += parsedChunk.token;
               scrollToBottom();
             } catch (parseError) {
               console.warn("JSON解析失败，跳过该行: ", line);
@@ -307,17 +335,129 @@ const getAnswer = async () => {
     console.log("流结束");
   } catch (error) {
     console.error("错误: ", error);
-    messages.value.pop(); //直接删去最后一个
+    messages.value.pop(); // 直接删去最后一个
     if (error.message === "请求超时") {
       ErrorPop("请求超时，请重试");
     } else {
       ErrorPop("出错请重试");
     }
   }
-  //保存
+  // 保存
   saveHistory();
 };
+function logFormData(formData) {
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ':', pair[1]);
+  }
+}
 
+//图片专用传输线路
+const getPictureAnswer = async (fileData, sessionName) => {
+  emit("get-return", {success: false});
+  setTimeout(async () => {
+    // ai信息推入
+    messages.value.push({
+      text: '',
+      isUser: false,
+      time: new Date().toLocaleString('default', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      loading: true,
+      isPicture: false
+    });
+    await nextTick();
+  }, 0);
+  const timeout = 15000; // 设置超时时间（以毫秒为单位，例如10秒）
+
+  // 从 localStorage 获取 token
+  let token = localStorage.getItem('token');
+
+  const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("请求超时")), timeout)
+  );
+
+  try {
+    const response = await Promise.race([
+      (async () => {
+        const formData = new FormData();
+        formData.append('file_data', fileData);
+        formData.append('user_input', "描述一下");
+        formData.append('name', sessionName);
+        logFormData(formData);
+
+        return await fetch('http://localhost:5000/api/model/session', {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          },
+          body: formData,
+        });
+      })(),
+      timeoutPromise, // 如果 fetch 未完成，此 promise 将优先返回超时错误
+    ]);
+
+
+    if (!response.ok) {
+      // ErrorPop("出错请重试");
+      emit("get-return", {success: false});
+
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    if (!response.body) {
+      throw new Error("流式返回没有body");
+    }
+    emit("get-return", {success: true});
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let done = false;
+
+    messages.value[messages.value.length - 1].loading = false; // 解除加载
+
+    while (!done) {
+      const {value, done: readerDone} = await reader.read();
+      done = readerDone;
+
+      if (value) {
+        // 解码数据块并按行分割
+        // console.log("value", value);
+        const chunk = decoder.decode(value, {stream: true});
+        // console.log("chunk", chunk);
+        const lines = chunk.split("\n");
+
+        // 逐行解析并处理
+        lines.forEach((line) => {
+          if (line.trim()) { // 忽略空行
+            try {
+              const parsedChunk = JSON.parse(line);
+              messages.value[messages.value.length - 1].text += parsedChunk.token;
+              scrollToBottom();
+            } catch (parseError) {
+              console.warn("JSON解析失败，跳过该行: ", line);
+            }
+          }
+        });
+      }
+    }
+
+    scrollToBottom();
+    console.log("流结束");
+  } catch (error) {
+    emit("get-return", {success: false});
+    console.error("错误: ", error);
+    messages.value.pop(); // 直接删去最后一个
+    if (error.message === "请求超时") {
+      ErrorPop("请求超时，请重试");
+    } else {
+      ErrorPop("出错请重试");
+    }
+  }
+};
 
 //返回markdown
 const renderedText = (text) => {
@@ -420,7 +560,7 @@ onBeforeMount(() => {
   personalPrompt = stateStore.personalPrompt;//个人prompt
 
   //初始化消息记录
-  if (stateStore.chatHistory.length !== 0) messages.value = stateStore.chatHistory;
+  // if (stateStore.chatHistory.length !== 0) messages.value = stateStore.chatHistory;
 
 });
 
@@ -428,10 +568,6 @@ onBeforeMount(() => {
 const saveHistory = () => {
   stateStore.setChatHistory(messages.value);
 }
-
-// 一再接受inputValue
-import {watch} from 'vue';
-import {ElMessage} from "element-plus";
 
 
 // 接收来自父组件的 props
@@ -485,6 +621,7 @@ const deleteMessage = (index) => {
   saveHistory();
 };
 
+const emit = defineEmits(['get-return']);
 
 </script>
 

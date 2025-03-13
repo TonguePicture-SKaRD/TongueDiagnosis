@@ -18,9 +18,9 @@
               @click="handleItemClick(item.id)"
           >
             {{ item.label }}
-            <el-icon @click.stop="removeItem(item.id)" class="delete-icon">
-              <el-icon-delete/>
-            </el-icon>
+            <!--            <el-icon @click.stop="removeItem(item.id)" class="delete-icon">-->
+            <!--              <el-icon-delete/>-->
+            <!--            </el-icon>-->
           </div>
 
         </div>
@@ -28,7 +28,7 @@
 
       <!-- 主内容区域 -->
       <div class="main-container">
-        <Main/>
+        <Main ref="mainPageRef"/>
       </div>
     </div>
   </div>
@@ -42,29 +42,59 @@ import {Delete as ElIconDelete} from '@element-plus/icons-vue';
 import axios from "axios";
 
 // 选中的项
-const activeItem = ref<string | null>(null);
+const activeItem = ref<string | null | number>(null);
+//页面ref
+const mainPageRef = ref(null);
 
 // 列表项
-const items = ref([
-  {id: '1', label: '记录一'},
-  {id: '2', label: '记录二'},
-  {id: '3', label: '记录三'},
-  {id: '4', label: '记录四'}
-]);
+const items = ref([]);
 
 // 新增项名称
 const newItemLabel = ref('');
-let itemIdCounter = items.value.length + 1;
+let itemIdCounter = 10000000;
 
 /**
  * 处理点击侧边栏项
  * @param id 选中项的 ID
  */
-const handleItemClick = (id: string) => {
+const handleItemClick = (id: string | number) => {
   activeItem.value = id;
 
   // 你可以在这里添加额外的处理逻辑，例如：
   console.log(`选中项: ${id}`);
+  const tempTip = items.value.find(item => item.id === id).temp
+  if (tempTip) {
+    console.log("临时页面")
+    mainPageRef.value.resetPage();
+    return
+  }
+  axios.get("/model/record/" + id, {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
+    }, timeout: 3000
+  }).then(res => {
+    console.log("选中页面的数据", res.data.data.records)
+    const data = res.data.data.records
+    //注入数据
+    mainPageRef.value.inputData(data.map(item => {
+          return {
+            text: item.content,
+            isUser: item.role == 1,
+            loading: false,
+            isPicture: false,
+            time: new Date(item.create_at).toLocaleString('default', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit'
+            }),
+          }
+        }), id
+    )
+  }).catch(error => {
+    console.log(error);
+  })
 
   // 触发数据加载或页面跳转（如果有路由的话）
   // router.push(`/page/${id}`); // 需要 Vue Router
@@ -72,22 +102,27 @@ const handleItemClick = (id: string) => {
 
 // 监听 activeItem 变化，执行其他响应逻辑
 watch(activeItem, (newVal) => {
-  if (newVal) {
-    console.log(`已切换到: ${newVal}`);
-    // 可以在这里请求数据或更新组件内容
+  //临时的就及时更新在哪
+  // console.log("activeItem", activeItem)
+  if (items.value.find(item => item.id === activeItem.value).temp) {
+    mainPageRef.value.setTempName(items.value.find(item => item.id === activeItem.value).label)
   }
 });
 
 // 添加新项
 const addItem = () => {
   if (newItemLabel.value.trim()) {
-    const newItemId = `${itemIdCounter++}`;
+    const newItemId = ++itemIdCounter;
     items.value.push({
       id: newItemId,
-      label: newItemLabel.value.trim()
+      label: newItemLabel.value.trim(),
+      temp: true
     });
     handleItemClick(newItemId); // 自动选中新添加的项
     newItemLabel.value = '';
+    mainPageRef.value.resetPage();
+
+
   }
 };
 
@@ -99,15 +134,27 @@ const removeItem = (targetId: string) => {
   }
 };
 
+
+//格式化返回的数据
+const formatData = (data: any) => {
+  return data.map(item => {
+    return {
+      id: item.session_id,
+      label: item.name,
+      temp: false
+    }
+  })
+}
+
 onMounted(() => {
   // 获取所有session
-  axios.get("/user/record", {
+  axios.get("/model/session", {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('token')
     }, timeout: 3000
   }).then(res => {
-    console.log(res.data.data)
-    items.value = res.data.data
+    console.log("初始化数据", res.data.data)
+    items.value = formatData(res.data.data)
   }).catch(error => {
     console.log(error);
   })

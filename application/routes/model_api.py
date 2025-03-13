@@ -141,14 +141,11 @@ async def upload(sessionId: int,
     else:
         # user_input = "告诉我我的体质怎么样"
         bot = OllamaStreamChatter(
-            model="deepseek-r1:14b",
+            model="qwen:0.5b",
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
         )
         create_new_chat_records(db=db, content=user_input.input, session_id=sessionId, role=1)
-        return StreamingResponse(
-            bot.chat_stream_add(user.id, db, sessionId),
-            media_type='application/x-ndjson'  # 修改媒体类型
-        )
+        return bot.chat_stream_add(user.id, db, sessionId)
 
 class inputPicture(BaseModel):
     file_data: UploadFile
@@ -230,16 +227,13 @@ async def upload(inputPic: inputPicture,
         #接下来开始对接deepseek
         # user_input = "告诉我我的体质怎么样"
         bot = OllamaStreamChatter(
-            model="deepseek-r1:14b",
+            model="qwen:0.5b",
             system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
         )
         new_message = create_new_session(ID=user.id, db=db, tittle=inputPic.name)
         session_new_id = new_message.id
         create_new_chat_records(db=db, content=inputPic.user_input, session_id=session_new_id, role=1)
-        return StreamingResponse(
-            bot.chat_stream_first(inputPic.user_input, feature, user.id, db, session_new_id),
-            media_type='application/x-ndjson'  # 修改媒体类型
-        )
+        return bot.chat_stream_first(inputPic.user_input, feature, user.id, db, session_new_id)
     else:
         return schemas.UploadResponse(
             code=201,
