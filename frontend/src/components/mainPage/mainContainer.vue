@@ -1,7 +1,7 @@
 <template>
   <div class="back-ground">
     <div class="common-layout">
-      <Main :receivedInput="sharedInput" ref="mainRef" @get-return="handleGetReturn"/>
+      <Main :receivedInput="sharedInput" ref="mainRef" @get-return="handleGetReturn" @back-id="backIdToCheck"/>
       <Bottom @send-to-main="handleSendToMain" @send-picture="handleSendPicture" ref="dialogRef"/>
     </div>
   </div>
@@ -60,6 +60,13 @@ defineExpose({inputData, resetPage, setTempName})
 const handleGetReturn = (data) => {
   dialogRef.value.getReturn(data);
 }
+
+//返回id给check
+const backIdToCheck = (id) => {
+  emit("back-id", id);
+}
+
+const emit = defineEmits(["back-id"])
 </script>
 
 <style scoped>

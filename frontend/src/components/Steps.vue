@@ -34,7 +34,7 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue';
 
-const totalTime = 12; // 总倒计时时间（秒）
+const totalTime = 20; // 总倒计时时间（秒）
 const remainingTime = ref(totalTime); // 剩余时间
 const dashOffset = ref(0); // 进度条偏移量
 const totalLength = 520; // 矩形路径的总长度

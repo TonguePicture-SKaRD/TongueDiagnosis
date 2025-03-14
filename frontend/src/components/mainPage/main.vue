@@ -278,7 +278,7 @@ const getAnswer = async () => {
     scrollToBottom();
 
     const response = await Promise.race([
-      fetch(baseURL + sessionId.value, { // 注意这里去掉了多余的 +
+      fetch(baseURL + "/" + sessionId.value, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -321,7 +321,8 @@ const getAnswer = async () => {
           if (line.trim()) { // 忽略空行
             try {
               const parsedChunk = JSON.parse(line);
-              messages.value[messages.value.length - 1].text += parsedChunk.token;
+              if (!parsedChunk.is_complete)
+                messages.value[messages.value.length - 1].text += parsedChunk.token;
               scrollToBottom();
             } catch (parseError) {
               console.warn("JSON解析失败，跳过该行: ", line);
@@ -345,6 +346,7 @@ const getAnswer = async () => {
   // 保存
   saveHistory();
 };
+
 function logFormData(formData) {
   for (let pair of formData.entries()) {
     console.log(pair[0] + ':', pair[1]);
@@ -389,7 +391,7 @@ const getPictureAnswer = async (fileData, sessionName) => {
         formData.append('name', sessionName);
         logFormData(formData);
 
-        return await fetch('http://localhost:5000/api/model/session', {
+        return await fetch(baseURL, {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`
@@ -435,7 +437,10 @@ const getPictureAnswer = async (fileData, sessionName) => {
           if (line.trim()) { // 忽略空行
             try {
               const parsedChunk = JSON.parse(line);
-              messages.value[messages.value.length - 1].text += parsedChunk.token;
+              if (!parsedChunk.is_complete)
+                messages.value[messages.value.length - 1].text += parsedChunk.token;
+              sessionId.value = parsedChunk.session_id;
+              emit("back-id", sessionId.value);
               scrollToBottom();
             } catch (parseError) {
               console.warn("JSON解析失败，跳过该行: ", line);
@@ -458,6 +463,12 @@ const getPictureAnswer = async (fileData, sessionName) => {
     }
   }
 };
+
+
+//传输图片时回传id
+const getPictureId = () => {
+  return sessionId.value;
+}
 
 //返回markdown
 const renderedText = (text) => {
@@ -621,7 +632,7 @@ const deleteMessage = (index) => {
   saveHistory();
 };
 
-const emit = defineEmits(['get-return']);
+const emit = defineEmits(['get-return', 'back-id']);
 
 </script>
 

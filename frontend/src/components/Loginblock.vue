@@ -32,7 +32,6 @@
 <script lang="ts" setup>
 import {reactive, ref, h} from 'vue'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
-import {RouterLink, RouterView} from 'vue-router'
 import router from '@/router';
 
 
@@ -87,8 +86,8 @@ let user = reactive({
 
 //创建规则
 const rules = reactive<FormRules<typeof user>>({
-  Email: [{validator: validateEmail, trigger: ['blur', 'change']}],
-  Password: [{validator: validatePassword, trigger: ['blur', 'change']}],
+  Email: [{validator: validateEmail, trigger: ['blur']}],
+  Password: [{validator: validatePassword, trigger: ['blur']}],
 })
 
 
@@ -128,7 +127,7 @@ const set_Login_put = () => {
   axios({
     method: 'put',
     data: generate_form(),
-    url: './user/login',
+    url: '/user/login',
     timeout: 5000
   })
       .then(response => {
@@ -218,12 +217,12 @@ import {Avatar, Key, Checked} from '@element-plus/icons-vue'
 .login-card {
   padding: 5px;
   border-radius: 12px;
-  max-height: 22vh;
+  max-height: 20%;
 }
 
 .login_b {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 20px;
   /* background-color: #f6f6f6;
   outline: none;
   border-radius: 8px;

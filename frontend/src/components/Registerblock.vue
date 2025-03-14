@@ -108,8 +108,8 @@ const user = reactive({
 
 //创建规则
 const rules = reactive<FormRules<typeof user>>({
-  Email: [{validator: validateEmail, trigger: ['blur', 'change']}],
-  Password: [{validator: validatePassword, trigger: ['blur', 'change']}],
+  Email: [{validator: validateEmail, trigger: ['blur']}],
+  Password: [{validator: validatePassword, trigger: ['blur']}],
   checkPassword: [{validator: validatecheckPassword, trigger: 'change'}],
 })
 
@@ -246,6 +246,6 @@ import router from '@/router';
 .register-card {
   padding: 5px;
   border-radius: 12px;
-  max-height: 28vh;
+  max-height: 30%;
 }
 </style>
