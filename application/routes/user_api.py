@@ -128,7 +128,7 @@ def record_get(user: schemas.UserBase = Depends(get_current_user), db: Session =
         return schemas.RecordResponse(
             code=101,
             message="operation failed",
-            data=None
+            data=[]
         )
     else:
         user_record = get_user_record(ID=user.id, db=db)
