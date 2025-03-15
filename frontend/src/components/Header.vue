@@ -59,23 +59,30 @@ function logout() {
       text-color="#fff"
       active-text-color="#ffd04b"
       @select="handleSelect"
-      width="100%"
+      style="display: flex; justify-content: space-between;"
   >
-    <el-menu-item index="1" disabled>
-      <span class="logo_word">舌 诊 宝</span>
-    </el-menu-item>
-    <el-menu-item index="2"><h3>首页</h3></el-menu-item>
-    <el-menu-item index="3"><h3>检测</h3></el-menu-item>
-    <el-sub-menu index="5" v-if="isl">
-      <template #title>
-        <el-avatar :size="40" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
-        <span style="margin-left: 8px">用户 User</span>
-      </template>
-      <el-menu-item index="5-1" @click="logout">登出</el-menu-item>
-    </el-sub-menu>
-    <el-menu-item v-else index="5">
-      <router-link to="/register">登录/注册</router-link>
-    </el-menu-item>
+    <!-- 左侧部分包裹容器 -->
+    <div style="display: flex;">
+      <el-menu-item index="1" disabled>
+        <span class="logo_word">舌 诊 宝</span>
+      </el-menu-item>
+      <el-menu-item index="2"><h3>首页</h3></el-menu-item>
+      <el-menu-item index="3"><h3>检测</h3></el-menu-item>
+    </div>
+
+    <!-- 右侧部分 -->
+    <div>
+      <el-sub-menu index="5" v-if="isl" class="right-align">
+        <template #title>
+          <el-avatar :size="40" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"/>
+          <span style="margin-left: 8px">用户 User</span>
+        </template>
+        <el-menu-item index="5-1" @click="logout">登出</el-menu-item>
+      </el-sub-menu>
+      <el-menu-item v-else index="5" class="right-align">
+        <router-link to="/register">登录/注册</router-link>
+      </el-menu-item>
+    </div>
   </el-menu>
 </template>
 
@@ -88,5 +95,10 @@ function logout() {
 .logo_word {
   font-size: 20px;
   font-weight: bold;
+}
+
+/* 右侧对齐样式 */
+.right-align {
+  margin-left: auto !important;
 }
 </style>
