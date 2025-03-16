@@ -83,8 +83,8 @@ npm run dev
 ## 🧩 项目架构
 
 ### 系统流程图
-```mermaid
 在做所有操作之前，必须先在左上角先写一个标题，用于开启这次对话。
+```mermaid
 graph TD
     A[用户上传舌象] --> B(YOLOv5舌体检测)
     B --> C(SAM图像分割)
