@@ -1,58 +1,137 @@
-# TongueDiagnosis
+# TongueDiagnosis.AI: TCM Tongue Image Diagnosis Assistant 🩺🤖
 
-## 														中医智能舌诊——舌诊宝
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Python 3.9](https://img.shields.io/badge/Python-3.9%2B-green.svg)](https://www.python.org/)
+[![Conda 23.10](https://img.shields.io/badge/Conda-23.10%2B-blue.svg)](https://docs.conda.io/)   
+Chinese(中文版本): [Readme_cn.md](https://github.com/TonguePicture-SKaRD/TongueDiagnosis/tree/master/Document/Read_cn.md)
 
+> A multimodal tongue image analysis system powered by deep learning, integrating object detection, image segmentation, and LLMs for intelligent TCM tongue diagnosis.
 
+---
 
-### 一、项目概述
+## 📌 Core Features
 
-​项目的主要功能是利用深度学习算法对用户上传的舌象图片进行分析，对舌象的舌色、舌苔色、薄厚、腻否进行四维分类。项目采用多模型拼接进行各类任务的专项训练。这种方法使得不同的舌象处理任务在不同的模型进行处理，然后将它们拼接起来形成完整的舌象分析链条。该多模型采用了yolov5目标检测模型、Segment Anything模型进行舌象的分割对用户上传的舌象图片进行预处理，使用ResNet50残差神经网络对剩余的完整舌象进行分类任务。
+### Version 1.0 Foundation
+- **Four-Dimensional Analysis**  
+  Precise identification of tongue color, coating color, thickness, and greasiness
+- **Automated Processing Pipeline**  
+  `YOLOv5` tongue localization → `Segment Anything` segmentation → `ResNet50` classification
+- **Cross-Platform Web App**  
+  Browser-based access supporting Windows/macOS/Linux
 
+### Version 2.0 Enhancements ✨
+- **Intelligent Diagnosis Engine**  
+  Integrated Deepseek `Deepseek-r1-14B` LLM enables:
+  - Multidimensional health assessment
+  - Natural language Q&A consultation
+  - Voice I/O (Chrome-based browsers required)
 
-项目的多模型部署于Web应用的后端，用户可以便捷的使用浏览器在各类系统上进行舌象的上传以及获得舌象分析的结果。应用操作简单，使用便捷。
-   
-### 二、源码文件架构
+---
 
+## 🚀 Quick Start
+
+### Requirements
+- Conda ≥23.10.0
+- Python 3.9.21
+- SQLite 3.35+
+
+### Backend Setup
+```bash
+# Clone repository
+git clone https://github.com/your-repo/TongueDiagnosis.git
+cd TongueDiagnosis/application
+
+# Create environment
+conda create -n tongueai python=3.9.21
+conda activate tongueai
+pip install -r requirements.txt
+
+# Initialize database
+sqlite3 tongue.db < models/schema.sql  # Creates 4 tables
+
+# Download model weights
+wget -P ./net/weights/ \
+  https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/{resnet50,yolov5}.pth \
+  https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth
+
+# Launch backend
+python ../run.py
 ```
-TongueDiagnosis{
-	application (后端) {
-		config (后端配置)
-		core (核心算法)
-		models (数据库模型)
-		net (神经网络模型)
-		orm (数据库映射模型)
-		routes (路由)
-		init.py (后端初始化)
-	}
-	frontend (前端) {
-		cypress (调试文件)
-		public (静态文件)
-		src (源代码) {
-			assets (资产)
-			components (组件)
-			router (路由)
-			views (视图)
-			App.vue (Vue应用根组件)
-			main.js (Vue应用入口)
-		}
-		index.html (网站入口)
-		package.json (所有包管理配置)
-		vite.config.js (脚手架配置，打包代理跨域配置)
-	}
-	.gitignore (git忽略)
-	run.py (整体应用入口)
-}
+
+### Frontend Launch
+#### Option 1: Prebuilt Executable
+```bash
+./frontend/tongue_diagnosis.exe  # Windows
 ```
 
-### 三、应用功能
+#### Option 2: Source Code
+##### Before starting, ensure a "tongue" folder exists in ./public directory (create if missing)
+```bash
+cd frontend
+npm install
+# Electron desktop
+npm run electron:start
 
-舌象上传与诊断：
-舌象诊断功能属于平台的核心业务，实现了舌象的上传、诊断并且生成健康报告和建议。在舌象上传环节，用户可以通过自己的设备进行舌象的上传，平台将会对用户上传的舌象进行诊断并生成属于用户的健康报告。生成的健康报告会及时显示给用户，同时平台将会储存用户的健康报告，供用户以后进行查看。
+# Web browser (Chrome recommended)
+npm run dev
+```
 
+---
 
-诊断记录查看：
-诊断记录查看为用户提供了健康报告的查询服务，包括健康报告记录列表显示，以及对应记录查询。用户还可以通过日期等进行过去健康报告的查询，同时，健康报告将按照时间进行降序排序，方便用户查询到自己最近的健康诊断报告。
+## 🧩 Architecture
 
-   
+### Workflow
+```mermaid
+graph TD
+    A[User Upload] --> B(YOLOv5 Localization)
+    B --> C(SAM Segmentation)
+    C --> D(ResNet50 Classification)
+    D --> E[4D Feature Vector]
+    E --> F{Deepseek LLM}
+    F --> G[Health Report]
+    F --> H[Interactive Q&A]
+```
 
-​	
+### Directory Structure
+```
+TongueDiagnosis/
+├── application/          # Backend Core
+│   ├── config/           - Service Configuration
+│   ├── core/             - Algorithms
+│   │   ├── detection.py  -- YOLOv5 Localization
+│   │   ├── segmentation.py -- SAM Segmentation
+│   │   └── analysis.py   -- ResNet50 Classification
+│   ├── net/weights/      - Model Weights
+│   └── routes/           - API Routes
+├── frontend/             # Frontend Project
+│   ├── src/              - Vue3 Source
+│   │   ├── views/        -- Page Components
+│   │   └── services/     -- API Services
+│   └── electron/         - Desktop Wrapper
+└── docs/                 # Documentation
+```
+
+---
+
+## 🤝 Contribution
+
+We welcome contributions! Please follow this workflow:
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -m 'Add some feature'`)
+4. Push branch (`git push origin feature/your-feature`)
+5. Open Pull Request
+
+**Issue Reporting**: [New Issue](https://github.com/TonguePicture-SKaRD/TongueDiagnosis/issues)
+
+---
+
+## 📜 License
+
+This project is licensed under [AGPL-3.0](LICENSE). Third-party model weights follow original licenses:
+- SAM Model: [Apache 2.0](https://github.com/facebookresearch/segment-anything/blob/main/LICENSE)
+- Deepseek Model: [Official License](https://www.deepseek.com/terms)
+
+---
+
+> 🌱 Developed over 18 months by a dedicated team of five. Join our [Discussions](https://github.com/TonguePicture-SKaRD/TongueDiagnosis/discussions/20) to share feedback!
