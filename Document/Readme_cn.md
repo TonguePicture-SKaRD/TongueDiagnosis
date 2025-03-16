@@ -84,8 +84,8 @@ npm run dev
 
 ### 系统流程图
 ```mermaid
-graph TD
 在做所有操作之前，必须先在左上角先写一个标题，用于开启这次对话。
+graph TD
     A[用户上传舌象] --> B(YOLOv5舌体检测)
     B --> C(SAM图像分割)
     C --> D(ResNet50特征分类)
