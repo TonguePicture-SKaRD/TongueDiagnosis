@@ -1,45 +1,48 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router' // 使用 Hash 模式
 import Home from '../views/Home.vue'
 import Check from "../views/Check.vue";
 import Login from "@/views/LoginRegister.vue";
 import Register from "@/views/LoginRegister.vue";
 
+const routes = [
+    {
+        path: '/home',
+        name: 'home',
+        component: Home, // 首页
+        meta: {
+            requireAuth: true, // 需要登录
+        },
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: Login, // 登录界面
+    },
+    {
+        path: '/register',
+        name: 'register',
+        component: Register, // 注册界面
+    },
+    {
+        path: '/check',
+        name: 'check',
+        component: Check, // 检查页面
+        meta: {
+            requireAuth: true, // 需要登录
+        },
+    },
+    {
+        path: '/', // 根路径重定向到首页
+        redirect: '/home',
+    },
+
+];
+
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/home',
-      name: 'home',
-      component: Home,//首页
-      meta: {
-        requireAuth: true,  // 判断是否需要登录
-      },
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: Login//登录界面
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: Register //登录界面
-    },
-    {
-      path: '/check',
-      name: 'check',
-      component: Check,
-      meta: {
-        requireAuth: true,  // 判断是否需要登录
-      },
-    },
-    {
-      path:'',
-      redirect:'/home' // 重定向，即最初路径为根路径时，立即重定向到/home路径
-    }
-  ],
-})
-
-export default router
+    history: createWebHashHistory(), // 使用 Hash 模式
+    routes,
+});
 
 
+
+export default router;

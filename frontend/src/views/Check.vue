@@ -125,7 +125,9 @@ watch(activeItem, (newVal) => {
 
 // 添加新项
 const addItem = () => {
-
+  if (!newItemLabel.value.trim()) {
+    return;
+  }
   const newItemId = ++itemIdCounter;
   items.value.push({
     id: newItemId,

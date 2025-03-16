@@ -175,6 +175,7 @@ import Header from "@/components/Header.vue";
 .back-ground {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   overflow: hidden;
+  height: 100vh;
 
 }
 </style>
