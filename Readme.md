@@ -3,7 +3,7 @@
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python 3.9](https://img.shields.io/badge/Python-3.9%2B-green.svg)](https://www.python.org/)
 [![Conda 23.10](https://img.shields.io/badge/Conda-23.10%2B-blue.svg)](https://docs.conda.io/)   
-Chinese(中文版本): [Readme_cn.md](https://github.com/TonguePicture-SKaRD/TongueDiagnosis/tree/master/Document/Read_cn.md)
+Chinese(中文版本): [Readme_cn.md](https://github.com/TonguePicture-SKaRD/TongueDiagnosis/blob/master/Document/Readme_cn.md)
 
 > A multimodal tongue image analysis system powered by deep learning, integrating object detection, image segmentation, and LLMs for intelligent TCM tongue diagnosis.
 
