@@ -7,8 +7,6 @@
 
 > 基于深度学习的多模态舌象分析系统，融合目标检测、图像分割与语言大模型，提供智能化中医舌诊服务。
 
-![系统架构图](https://via.placeholder.com/800x400.png?text=System+Architecture+Diagram) <!-- 替换为实际架构图 -->
-
 ---
 
 ## 📌 核心功能
