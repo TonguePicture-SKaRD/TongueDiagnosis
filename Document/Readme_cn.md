@@ -47,7 +47,10 @@ conda activate tongueai
 pip install -r requirements.txt
 
 # 数据库初始化
-sqlite3 tongue.db < models/schema.sql  # 自动创建4张数据表
+sqlite3 tongue.db < models/create_ChatRecord.sql  # 自动创建4张数据表
+sqlite3 tongue.db < models/create_Session.sql  # 自动创建4张数据表
+sqlite3 tongue.db < models/create_TongueDiagnosis.sql  # 自动创建4张数据表
+sqlite3 tongue.db < models/User.sql  # 自动创建4张数据表
 
 # 模型权重配置
 wget -P ./net/weights/ \
@@ -61,6 +64,7 @@ python ../run.py
 ### 前端启动
 #### 方式一：预编译版本
 ```bash
+npm run build
 ./frontend/tongue_diagnosis.exe  # Windows
 ```
 
@@ -69,6 +73,7 @@ python ../run.py
 ```bash
 cd frontend
 npm install
+npm run build
 # Electron桌面端
 npm run electron:start
 

@@ -47,7 +47,10 @@ conda activate tongueai
 pip install -r requirements.txt
 
 # Initialize database
-sqlite3 tongue.db < models/schema.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_ChatRecord.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_Session.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_TongueDiagnosis.sql  # Creates 4 tables
+sqlite3 tongue.db < models/User.sql  # Creates 4 tables
 
 # Download model weights
 wget -P ./net/weights/ \
@@ -61,6 +64,7 @@ python ../run.py
 ### Frontend Launch
 #### Option 1: Prebuilt Executable
 ```bash
+npm run build
 ./frontend/tongue_diagnosis.exe  # Windows
 ```
 
@@ -69,6 +73,7 @@ python ../run.py
 ```bash
 cd frontend
 npm install
+npm run build
 # Electron desktop
 npm run electron:start
 
