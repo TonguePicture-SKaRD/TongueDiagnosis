@@ -66,7 +66,8 @@ wget -P ./net/weights/ \
   "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth"
 
 # Launch backend
-python ../run.py
+cd..
+python run.py
 ```
 
 ### Frontend Launch
