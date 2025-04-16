@@ -52,10 +52,18 @@ sqlite3 tongue.db < models/create_Session.sql  # 自动创建4张数据表
 sqlite3 tongue.db < models/create_TongueDiagnosis.sql  # 自动创建4张数据表
 sqlite3 tongue.db < models/User.sql  # 自动创建4张数据表
 
-# 模型权重配置
+# 新建目录
+mkdir -Force ./net/weights/
+
+# 模型权重配置 （终端无法运行的话请手动下载权重文件，共7个）
 wget -P ./net/weights/ \
-  https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/{resnet50,yolov5}.pth \
-  https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/rot_and_greasy.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/thickness.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/tongue_coat_color.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/tongue_color.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/unet.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/yolov5.pt" \
+  "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth"
 
 # 启动服务
 python ../run.py

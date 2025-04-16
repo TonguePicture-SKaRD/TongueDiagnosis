@@ -52,10 +52,18 @@ sqlite3 tongue.db < models/create_Session.sql  # Creates 4 tables
 sqlite3 tongue.db < models/create_TongueDiagnosis.sql  # Creates 4 tables
 sqlite3 tongue.db < models/User.sql  # Creates 4 tables
 
-# Download model weights
+# Make a directory 
+mkdir -Force ./net/weights/
+
+# Download model weights (If the terminal cannot run, please manually download the weight file, a total of 7)
 wget -P ./net/weights/ \
-  https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/{resnet50,yolov5}.pth \
-  https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/rot_and_greasy.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/thickness.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/tongue_coat_color.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/tongue_color.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/unet.pth" \
+  "https://github.com/TonguePicture-SKaRD/TongueDiagnosis/releases/download/V1.0_Beta/yolov5.pt" \
+  "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth"
 
 # Launch backend
 python ../run.py
