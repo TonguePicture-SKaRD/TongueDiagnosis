@@ -12,3 +12,4 @@ frontend/public/tongue
 /application/net/weights/
 /node_modules
 AppDatabase.db
+*.db

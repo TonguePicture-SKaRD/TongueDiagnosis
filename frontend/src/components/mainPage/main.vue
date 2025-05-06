@@ -276,7 +276,7 @@ const getAnswer = async () => {
 
   try {
     scrollToBottom();
-
+    console.log(baseURL + "/" + sessionId.value);
     const response = await Promise.race([
       fetch(baseURL + "/" + sessionId.value, {
         method: "POST",
