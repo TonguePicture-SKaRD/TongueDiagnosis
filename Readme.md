@@ -55,7 +55,7 @@ sqlite3 tongue.db < models/create_TongueAnalysis.sql  # Creates 4 tables
 sqlite3 tongue.db < models/create_User.sql  # Creates 4 tables
 
 # Make a directory 
-mkdir -Force ./net/weights/
+mkdir -p ./net/weights
 
 # Download model weights (If the terminal cannot run, please manually download the weight file, a total of 7)
 wget -P ./net/weights/ \
