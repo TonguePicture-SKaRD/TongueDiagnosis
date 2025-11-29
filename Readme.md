@@ -82,6 +82,7 @@ npm run build
 #### Option 2: Source Code
 ##### Before starting, ensure a "tongue" folder exists in ./public directory (create if missing)
 ```bash
+mkdir -p frontend/public/tongue
 cd frontend
 npm install
 npm run build
