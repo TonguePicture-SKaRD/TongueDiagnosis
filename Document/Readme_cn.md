@@ -38,22 +38,23 @@
 ### 后端部署
 ```bash
 # 克隆仓库
-git clone https://github.com/your-repo/TongueDiagnosis.git
+git clone https://github.com/TonguePicture-SKaRD/TongueDiagnosis.git
 cd TongueDiagnosis/application
 
 # 安装依赖
 conda create -n tongueai python=3.9.21
 conda activate tongueai
+cd ..
 pip install -r requirements.txt
-
+cd application
 # 数据库初始化
-sqlite3 tongue.db < models/create_ChatRecord.sql  # 自动创建4张数据表
-sqlite3 tongue.db < models/create_Session.sql  # 自动创建4张数据表
-sqlite3 tongue.db < models/create_TongueDiagnosis.sql  # 自动创建4张数据表
-sqlite3 tongue.db < models/User.sql  # 自动创建4张数据表
+sqlite3 tongue.db < models/create_ChatRecord.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_Session.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_TongueAnalysis.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_User.sql  # Creates 4 tables
 
 # 新建目录
-mkdir -Force ./net/weights/
+mkdir -p ./net/weights
 
 # 模型权重配置 （终端无法运行的话请手动下载权重文件，共7个）
 wget -P ./net/weights/ \
@@ -80,6 +81,7 @@ npm run build
 #### 方式二：源码启动
 ##### 检查在 ./public 目录是否存在一个叫tongue 的文件夹，如果不存在，需要用户手动新建这个空文件夹。
 ```bash
+mkdir -p frontend/public/tongue
 cd frontend
 npm install
 npm run build
