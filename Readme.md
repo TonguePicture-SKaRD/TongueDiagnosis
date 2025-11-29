@@ -38,7 +38,7 @@ Chinese(中文版本): [Readme_cn.md](https://github.com/TonguePicture-SKaRD/Ton
 ### Backend Setup
 ```bash
 # Clone repository
-git clone https://github.com/your-repo/TongueDiagnosis.git
+git clone https://github.com/TonguePicture-SKaRD/TongueDiagnosis.git
 cd TongueDiagnosis/application
 
 # Create environment
