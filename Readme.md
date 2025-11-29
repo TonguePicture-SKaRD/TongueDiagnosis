@@ -44,7 +44,9 @@ cd TongueDiagnosis/application
 # Create environment
 conda create -n tongueai python=3.9.21
 conda activate tongueai
+cd ..
 pip install -r requirements.txt
+cd application
 
 # Initialize database
 sqlite3 tongue.db < models/create_ChatRecord.sql  # Creates 4 tables
