@@ -51,8 +51,8 @@ cd application
 # Initialize database
 sqlite3 tongue.db < models/create_ChatRecord.sql  # Creates 4 tables
 sqlite3 tongue.db < models/create_Session.sql  # Creates 4 tables
-sqlite3 tongue.db < models/create_TongueDiagnosis.sql  # Creates 4 tables
-sqlite3 tongue.db < models/User.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_TongueAnalysis.sql  # Creates 4 tables
+sqlite3 tongue.db < models/create_User.sql  # Creates 4 tables
 
 # Make a directory 
 mkdir -Force ./net/weights/
