@@ -1,14 +1,8 @@
-"""
-这个文件包含了所有的请求和响应的Pydantic模型
-供后续的API路由使用
-"""
 import time
-
 from pydantic import BaseModel,Field
 from typing import Union, Annotated, Optional
 from fastapi.param_functions import Form
 from typing import List
-
 
 class BaseResponse(BaseModel):
     """
@@ -20,13 +14,11 @@ class BaseResponse(BaseModel):
     message: str
     data: Union[dict, list] = None
 
-
 class Token(BaseModel):
     """
     token: str
     """
     token: str
-
 
 class UserBase(BaseModel):
     """
@@ -36,7 +28,6 @@ class UserBase(BaseModel):
     ID: int = None
     email: str
 
-
 class UserAuth(UserBase):
     """
     ID int
@@ -44,7 +35,6 @@ class UserAuth(UserBase):
     password str
     """
     password: str
-
 
 class UserLogin(BaseModel):
     """
@@ -54,7 +44,6 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
-
 class UserRegister(BaseModel):
     """
     email: str
@@ -62,7 +51,6 @@ class UserRegister(BaseModel):
     """
     email: str
     password: str
-
 
 class Result(BaseModel):
     """
@@ -75,7 +63,6 @@ class Result(BaseModel):
     coating_color: Optional[int] = None
     tongue_thickness: Optional[int] = None
     rot_greasy: Optional[int] = None
-
 
 class Record(BaseModel):
     """
@@ -90,7 +77,6 @@ class Record(BaseModel):
     state: int = None
     result: Optional[Result] = None
 
-
 class LoginResponse(BaseResponse):
     """
     code: int
@@ -101,7 +87,6 @@ class LoginResponse(BaseResponse):
     """
     data: Union[Token, None]
 
-
 class RegisterResponse(BaseResponse):
     """
     code: int
@@ -109,7 +94,6 @@ class RegisterResponse(BaseResponse):
     data: None
     """
     pass
-
 
 class InfoResponse(BaseResponse):
     """
@@ -121,7 +105,6 @@ class InfoResponse(BaseResponse):
     """
     data: Union[UserBase, None]
 
-
 class RecordResponse(BaseResponse):
     """
     code: int
@@ -130,7 +113,6 @@ class RecordResponse(BaseResponse):
     """
     data: list[Record]
 
-
 class UploadResponse(BaseResponse):
     """
     code: int
@@ -138,7 +120,6 @@ class UploadResponse(BaseResponse):
     data: None
     """
     data: None
-
 
 class ExtendedOAuth2PasswordRequestForm:
     def __init__(
@@ -149,7 +130,6 @@ class ExtendedOAuth2PasswordRequestForm:
     ):
         self.email = email
         self.password = password
-
 
 class ChatRecordResponse(BaseModel):
     content: str

@@ -1,7 +1,3 @@
-"""
-与用户相关的路由
-"""
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -15,17 +11,6 @@ router_user = APIRouter()
 
 @router_user.post('/register', response_model=schemas.RegisterResponse)
 def register(schema: schemas.UserRegister, db: Session = Depends(get_db)):
-    """
-    注册账户的路由
-    @param schema: UserRegister
-        email: str
-        password: str
-    @param db: 路由传回的当前会话的db，获取数据库链接
-    @return: RegisterResponse
-            code: int
-            message: str
-            data: None
-    """
     password = schema.password
     email = schema.email
     code = register_user(email=email, password=password, db=db)
@@ -41,18 +26,6 @@ def register(schema: schemas.UserRegister, db: Session = Depends(get_db)):
 @router_user.put('/login', response_model=schemas.LoginResponse)
 def login(form_data: Annotated[schemas.ExtendedOAuth2PasswordRequestForm, Depends()],
           db: Session = Depends(get_db)):
-    """
-    登录账号的路由
-    @param form_data: Annotated[schemas.ExtendedOAuth2PasswordRequestForm, Depends()]
-        ID: str
-        email: str
-        password: str
-    @param db: 路由传回的当前会话的db，获取数据库链接
-    @return: LoginResponse
-        code: int
-        message: str
-        data: Token
-    """
     email = form_data.email
     password = form_data.password
     code = login_user(email=email, password=password, db=db)
@@ -82,16 +55,6 @@ def login(form_data: Annotated[schemas.ExtendedOAuth2PasswordRequestForm, Depend
 
 @router_user.get('/info', response_model=schemas.InfoResponse)
 def info_get(user: schemas.UserBase = Depends(get_current_user)):
-    """
-    获取用户信息的路由
-    @param user: User
-    @return: InfoResponse
-        code: int
-        message: str
-        data: UserBase
-            ID: int
-            email: str
-    """
     if not user:
         return schemas.InfoResponse(
             code=101,
@@ -111,19 +74,6 @@ def info_get(user: schemas.UserBase = Depends(get_current_user)):
 
 @router_user.get('/record', response_model=schemas.RecordResponse)
 def record_get(user: schemas.UserBase = Depends(get_current_user), db: Session = Depends(get_db)):
-    """
-    获取用户记录的路由
-    @param user: User
-    @param db: Session, router传入的db，用于链接数据库
-    @return: RecordResponse
-        code: int
-        message: str
-        data: List[Record]
-            ID: int
-            pic: str
-            result: Result
-
-    """
     if not user:
         return schemas.RecordResponse(
             code=101,
