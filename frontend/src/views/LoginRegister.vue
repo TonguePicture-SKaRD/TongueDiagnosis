@@ -1,16 +1,14 @@
+<script setup>
+import Register_Login from '@/components/Register_Login.vue';
+</script>
+
 <template>
   <div class="back-ground">
-<!--    <Header class="header"></Header>-->
     <div class="container_middle">
       <Register_Login/>
     </div>
   </div>
 </template>
-
-<script setup>
-import Header from "@/components/Header.vue";
-import Register_Login from '@/components/Register_Login.vue';
-</script>
 
 <style scoped>
 .container_middle {

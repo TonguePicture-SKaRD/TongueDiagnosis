@@ -1,63 +1,15 @@
-<template>
-  <div class="back-ground">
-
-    <div class="content">
-      <!-- 侧边栏 -->
-      <div class="sidebar-container">
-        <div class="sidebar-header">
-          <el-input v-model="newItemLabel" placeholder="输入记录名称" size="large"/>
-          <el-button type="primary" size="large" @click="addItem" @keydown="handleKeyDown">添加</el-button>
-        </div>
-
-        <div class="sidebar-list">
-          <div
-              v-for="item in items"
-              :key="item.id"
-              :class="['sidebar-item', { active: activeItem === item.id }]"
-              @click="handleItemClick(item.id)"
-          >
-            {{ item.label }}
-            <!--            <el-icon @click.stop="removeItem(item.id)" class="delete-icon">-->
-            <!--              <el-icon-delete/>-->
-            <!--            </el-icon>-->
-          </div>
-
-        </div>
-      </div>
-
-      <!-- 主内容区域 -->
-      <div class="main-container">
-        <GuidePage v-if="showGuide" ref="guidePageRef"/>
-        <Main ref="mainPageRef" @back-id="handleBackId" v-else/>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import {nextTick, onMounted, ref, watch} from 'vue';
-import Header from "@/components/Header.vue";
 import Main from "@/components/mainPage/mainContainer.vue";
 import GuidePage from "@/components/mainPage/guidePage.vue";
-import {Delete as ElIconDelete} from '@element-plus/icons-vue';
 import axios from "axios";
 
-//是否显示引导页
-const showGuide = ref(true);
-//引导页
-const guidePageRef = ref(null);
-
-// 选中的项
-const activeItem = ref<string | null | number>(null);
-//页面ref
-const mainPageRef = ref(null);
-
-
-// 列表项
-const items = ref([]);
-
-// 新增项名称
-const newItemLabel = ref('');
+const showGuide = ref(true); //是否显示引导页
+const guidePageRef = ref(null); //引导页
+const activeItem = ref<string | null | number>(null); // 选中的项
+const mainPageRef = ref(null); //页面ref
+const items = ref([]); // 列表项
+const newItemLabel = ref(''); // 新增项名称
 let itemIdCounter = 10000000;
 
 /**
@@ -65,7 +17,6 @@ let itemIdCounter = 10000000;
  * @param id 选中项的 ID
  */
 const handleItemClick = async (id: string | number) => {
-
   showGuide.value = false;
   await nextTick();
   console.log(`选中项: ${id}`);
@@ -194,6 +145,41 @@ const handleKeyDown = (event: KeyboardEvent) => {
 };
 </script>
 
+<template>
+  <div class="back-ground">
+
+    <div class="content">
+      <!-- 侧边栏 -->
+      <div class="sidebar-container">
+        <div class="sidebar-header">
+          <el-input v-model="newItemLabel" placeholder="输入记录名称" size="large"/>
+          <el-button type="primary" size="large" @click="addItem" @keydown="handleKeyDown">添加</el-button>
+        </div>
+
+        <div class="sidebar-list">
+          <div
+              v-for="item in items"
+              :key="item.id"
+              :class="['sidebar-item', { active: activeItem === item.id }]"
+              @click="handleItemClick(item.id)"
+          >
+            {{ item.label }}
+            <!--            <el-icon @click.stop="removeItem(item.id)" class="delete-icon">-->
+            <!--              <el-icon-delete/>-->
+            <!--            </el-icon>-->
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 主内容区域 -->
+      <div class="main-container">
+        <GuidePage v-if="showGuide" ref="guidePageRef"/>
+        <Main ref="mainPageRef" @back-id="handleBackId" v-else/>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* 整体布局 */

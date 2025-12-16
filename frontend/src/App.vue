@@ -4,7 +4,7 @@ import Header from '@/components/Header.vue'
 </script>
 <template>
   <div class="app-container">
-    <Header></Header>f
+    <Header></Header>
     <main class="main-content">
       <router-view></router-view>
     </main>
@@ -16,6 +16,7 @@ import Header from '@/components/Header.vue'
   padding: 0;
   margin: 0;
 }
+
 * {
   margin: 0;
   padding: 0;

@@ -13,7 +13,6 @@ onMounted(() => {
 
 <template>
   <div class="back-ground">
-<!--    <Header class="header"></Header>-->
     <div class="bg-decorations">
       <div class="decoration-circle decoration-1"></div>
       <div class="decoration-circle decoration-2"></div>
