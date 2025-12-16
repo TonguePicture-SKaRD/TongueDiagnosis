@@ -1,13 +1,26 @@
+"""
+定义数据库模型
+"""
+
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+
 from .database import Base
 
-class User(Base):
-    __tablename__ = 'User'
 
+class User(Base):  # 用户基本信息
+    """
+    CREATE TABLE User (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255),
+    password VARCHAR(255)
+    );
+   """
+    __tablename__ = 'User'
     id = Column(Integer, primary_key=True)  # 自增主键
     email = Column(String(255))
     password = Column(String(255))
+
 
 class TongueAnalysis(Base):
     """
@@ -27,7 +40,6 @@ class TongueAnalysis(Base):
     );
     """
     __tablename__ = 'TongueAnalysis'
-
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('User.id'))
     img_src = Column(String(255))
@@ -36,7 +48,7 @@ class TongueAnalysis(Base):
     coating_color = Column(Integer)
     tongue_thickness = Column(Integer)
     rot_greasy = Column(Integer)
-
+    # 定义与User表的外键关联关系
     user = relationship('User')
 
 
