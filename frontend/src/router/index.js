@@ -8,31 +8,31 @@ const routes = [
     {
         path: '/home',
         name: 'home',
-        component: Home, // 首页
+        component: Home,
         meta: {
-            requireAuth: true, // 需要登录
+            requireAuth: true,
         },
     },
     {
         path: '/login',
         name: 'login',
-        component: Login, // 登录界面
+        component: Login,
     },
     {
         path: '/register',
         name: 'register',
-        component: Register, // 注册界面
+        component: Register,
     },
     {
         path: '/check',
         name: 'check',
-        component: Check, // 检查页面
+        component: Check,
         meta: {
-            requireAuth: true, // 需要登录
+            requireAuth: true,
         },
     },
     {
-        path: '/', // 根路径重定向到首页
+        path: '/',
         redirect: '/home',
     },
 
@@ -42,7 +42,5 @@ const router = createRouter({
     history: createWebHashHistory(), // 使用 Hash 模式
     routes,
 });
-
-
 
 export default router;
