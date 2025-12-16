@@ -4,11 +4,10 @@
       <el-form ref="Email_Password_login" style="max-width: 210px" :model="user" status-icon :rules="rules"
                label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#ffffff" size="large">
         <el-form-item label="" prop="Email">
-          <el-input v-model="user.Email" placeholder="Your email" id="l_email" :prefix-icon="Avatar" size="large"/>
+          <el-input v-model="user.Email" placeholder="Your email" id="l_email" size="large"/>
         </el-form-item>
         <el-form-item label="" prop="Password">
-          <el-input v-model="user.Password" placeholder="Your password" id="l_password" type="password" show-password
-                    :prefix-icon="Key" size="large"/>
+          <el-input v-model="user.Password" placeholder="Your password" id="l_password" type="password" show-password size="large"/>
           <br>
         </el-form-item>
         <el-form-item>

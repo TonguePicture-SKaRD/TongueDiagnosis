@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia';
+import settings from '../config/config.js';
 
 export const useStateStore = defineStore('state', {
     state: () => ({
@@ -6,7 +7,7 @@ export const useStateStore = defineStore('state', {
         userImagePath: "./static/userDefault.jpg",
         aiImagePath: "./static/aiDefault.jpg",
         audioType: 'D',
-        baseUrl: "http://localhost:5000/api/model/session",
+        baseUrl: settings.apiBaseUrl + "/model/session",
         chatHistory: [],
         infoHistory: [],
         isPlayed: false,

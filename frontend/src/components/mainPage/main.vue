@@ -183,7 +183,7 @@ const sendAIMessage = async () => {
 
 
 const getAnswer = async () => {
-  const timeout = 10000;
+  const timeout = 40000;
   let token = localStorage.getItem('token');
   const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("请求超时")), timeout)

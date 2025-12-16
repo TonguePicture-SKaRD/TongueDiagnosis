@@ -12,29 +12,30 @@ from ..orm.database import get_db
 from ..orm import write_event, write_result, get_record_by_location, get_chat_record, get_all_chat_id, get_result, create_new_session, create_new_chat_records
 from ..config import Settings
 from ..net.predict import TonguePredictor
+from ..config import settings
 
 router_tongue_analysis = APIRouter()
 
 feature_map = {
-    "舌色": {
-        0: "淡白舌",
-        1: "淡红舌",
-        2: "红舌",
-        3: "绛舌",
-        4: "青紫舌"
+    "Color of the tongue": {
+        0: "Pale white tongue",
+        1: "Light red tongue",
+        2: "Red tongue",
+        3: "Crimson tongue",
+        4: "Bluish-purple tongue"
     },
-    "舌苔颜色": {
-        0: "白苔",
-        1: "黄苔",
-        2: "灰黑苔"
+    "Color of the tongue coating": {
+        0: "White coating",
+        1: "Yellow tongue coating",
+        2: "Gray-black tongue coating"
     },
-    "厚薄": {
-        0: "薄",
-        1: "厚"
+    "Thickness of the tongue": {
+        0: "Thin",
+        1: "Thick"
     },
-    "腐腻": {
-        0: "腻",
-        1: "腐"
+    "Decay and putrefaction of the tongue": {
+        0: "Putrefaction",
+        1: "decay"
     }
 }
 
@@ -44,10 +45,10 @@ def format_tongue_features(tongue_color,
                            rot_greasy):
     try:
         features = [
-            f"舌色：{feature_map['舌色'][tongue_color]}",
-            f"舌苔颜色：{feature_map['舌苔颜色'][coating_color]}",
-            f"厚薄：{feature_map['厚薄'][tongue_thickness]}",
-            f"腐腻：{feature_map['腐腻'][rot_greasy]}"
+            f"Color of the tongue: {feature_map['Color of the tongue'][tongue_color]}",
+            f"Color of the tongue coating: {feature_map['Color of the tongue coating'][coating_color]}",
+            f"Thickness of the tongue: {feature_map['Thickness of the tongue'][tongue_thickness]}",
+            f"Decay and putrefaction of the tongue: {feature_map['Decay and putrefaction of the tongue'][rot_greasy]}"
         ]
         return "，".join(features)
     except KeyError as e:
@@ -72,7 +73,7 @@ async def upload(sessionId: int,
         )
     else:
         bot = OllamaStreamChatter(
-            system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
+            system_prompt=settings.SYSTEM_PROMPT
         )
         create_new_chat_records(db=db, content=user_input.input, session_id=sessionId, role=1)
         return bot.chat_stream_add(user.id, db, sessionId)
@@ -135,7 +136,7 @@ async def upload(file_data: UploadFile = File(...),
         rot_greasy = result.rot_greasy
         feature = format_tongue_features(tongue_color,coating_color,tongue_thickness,rot_greasy)
         bot = OllamaStreamChatter(
-            system_prompt="你现在是一个专门用于舌诊的ai中医医生，我会在最开始告诉你用户舌头的四个图像特征，请你按照中医知识给用户一些建议"
+            system_prompt=settings.SYSTEM_PROMPT
         )
         new_message = create_new_session(ID=user.id, db=db, tittle=name)
         session_new_id = new_message.id

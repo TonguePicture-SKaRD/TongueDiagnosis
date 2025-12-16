@@ -5,15 +5,15 @@
                label-width="auto" class="Email_Password_form" v-loading="loading" element-loading-background="#ffffff"
                size="large">
         <el-form-item label="" prop="Email">
-          <el-input v-model="user.Email" placeholder="Your email" id="r_email" :prefix-icon="Avatar" size="large"/>
+          <el-input v-model="user.Email" placeholder="Your email" id="r_email" size="large"/>
         </el-form-item>
         <el-form-item label="" prop="Password">
           <el-input v-model="user.Password" placeholder="Set a password" id="r_password" type="password"
-                    show-password :prefix-icon="Key" size="large"/>
+                    show-password size="large"/>
         </el-form-item>
         <el-form-item label="" prop="checkPassword">
           <el-input v-model="user.checkPassword" placeholder="Confirm your password" id="r_cpassword" type="password" show-password
-                    :prefix-icon="Checked" size="large"/>
+                    size="large"/>
           <br>
         </el-form-item>
         <el-form-item>
@@ -22,7 +22,6 @@
         </el-form-item>
       </el-form>
     </el-card>
-
   </div>
 </template>
 

@@ -31,7 +31,7 @@ function registerShortcuts(win) {
         win.webContents.setZoomFactor(currentZoom - 0.1);
     });
     globalShortcut.register('CommandOrControl+0', () => {
-        win.webContents.setZoomFactor(1.0); // 重置为默认缩放比例
+        win.webContents.setZoomFactor(1.0);
     });
 }
 

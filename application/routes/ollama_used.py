@@ -2,13 +2,14 @@ import requests
 import json
 from starlette.responses import JSONResponse, StreamingResponse
 from ..orm import create_new_chat_records, get_chat_record
+from ..config import settings
 
 
 class OllamaStreamChatter:
-    def __init__(self, model="deepseek-r1:14b",
+    def __init__(self, model=settings.LLM_NAME,
                  system_prompt=None
                  ):
-        self.url = "http://localhost:11434/api/chat"
+        self.url = settings.OLLAMA_PATH
         self.headers = {"Content-Type": "application/json"}
         self.messages = []
         self.model = model
@@ -21,7 +22,7 @@ class OllamaStreamChatter:
 
     def chat_stream_first(self, user_input, feature, id, db, session_new_id):
         self.messages = []
-        self.messages.append({"role": "user", "content": "舌象特征是" + feature + "," + user_input})
+        self.messages.append({"role": "user", "content": "The characteristics of the tongue are" + feature + "," + user_input + ". Answer in English"})
         data = {
             "model": self.model,
             "messages": self.messages,
@@ -89,7 +90,6 @@ class OllamaStreamChatter:
                         if 'message' in chunk:
                             content = chunk['message']['content']
                             full_response += content
-                            # 将每个 token 包装为 JSON 并添加换行符
                             yield json.dumps({
                                 "token": content,
                                 "session_id": session_id,

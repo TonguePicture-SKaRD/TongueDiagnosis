@@ -22,7 +22,6 @@ const handleItemClick = async (id: string | number) => {
     mainPageRef.value.resetPage();
     activeItem.value = id;
     mainPageRef.value.setTempName(items.value.find(item => item.id === activeItem.value).label)
-
     return
   }
   axios.get("/model/record/" + id, {
