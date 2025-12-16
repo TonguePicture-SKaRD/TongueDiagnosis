@@ -279,7 +279,7 @@ const getPictureAnswer = async (fileData, sessionName) => {
     });
     await nextTick();
   }, 0);
-  const timeout = 15000;
+  const timeout = 40000;
 
   let token = localStorage.getItem('token');
 

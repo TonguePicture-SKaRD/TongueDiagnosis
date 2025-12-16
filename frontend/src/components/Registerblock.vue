@@ -32,7 +32,7 @@ const emit = defineEmits(["change"])
 
 const Email_Password_register = ref<FormInstance>()
 let loading = ref(false)
-const timeout = 5000
+const timeout = 20000
 let finish_register = ref<boolean>(false)
 
 const validatePassword = (rule: any, value: any, callback: any) => {

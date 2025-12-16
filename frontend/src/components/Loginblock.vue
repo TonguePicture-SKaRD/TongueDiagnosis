@@ -101,7 +101,7 @@ const set_Login_put = () => {
     method: 'put',
     data: generate_form(),
     url: '/user/login',
-    timeout: 5000
+    timeout: 20000
   })
       .then(response => {
         loading.value = false

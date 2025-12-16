@@ -27,7 +27,7 @@ const handleItemClick = async (id: string | number) => {
   axios.get("/model/record/" + id, {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('token')
-    }, timeout: 3000
+    }, timeout: 20000
   }).then(res => {
 
     console.log("选中页面的数据", res.data.data.records)
@@ -94,7 +94,7 @@ onMounted(() => {
   axios.get("/model/session", {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('token')
-    }, timeout: 20000
+    }, timeout: 40000
   }).then(res => {
     console.log("初始化数据", res.data.data)
     items.value = formatData(res.data.data)
