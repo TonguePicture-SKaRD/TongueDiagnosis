@@ -11,7 +11,7 @@ import settings from './config/config.js'
 
 let token = localStorage.getItem('token');
 
-axios.defaults.baseURL = settings.apiBaseUrl;
+axios.defaults.baseURL = settings.ServerUrl + '/api';
 axios.defaults.headers = {
     Authorization: "Bearer " + token
 }

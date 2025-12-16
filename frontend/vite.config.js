@@ -5,6 +5,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
+import settings from "./src/config/config.js";
 
 export default defineConfig({
     plugins: [
@@ -27,10 +28,10 @@ export default defineConfig({
         port: 5173,
         proxy: {
             '/api': {
-                target: 'http://localhost:5000',
+                target: settings.ServerUrl,
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, '/api')
-            }
+            },
         }
     },
     base: './',

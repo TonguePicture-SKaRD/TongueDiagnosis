@@ -7,7 +7,7 @@ export const useStateStore = defineStore('state', {
         userImagePath: "./static/userDefault.jpg",
         aiImagePath: "./static/aiDefault.jpg",
         audioType: 'D',
-        baseUrl: settings.apiBaseUrl + "/model/session",
+        baseUrl: settings.ServerUrl + "/api/model/session",
         chatHistory: [],
         infoHistory: [],
         isPlayed: false,
