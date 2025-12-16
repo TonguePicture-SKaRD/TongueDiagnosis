@@ -9,7 +9,7 @@ from ..models import schemas
 
 
 class OllamaStreamChatter:
-    def __init__(self, model="deepseek-r1:14b",
+    def __init__(self, model="deepseek-r1:1.5b",
                  system_prompt=None
                  ):
         self.url = "http://localhost:11434/api/chat"
