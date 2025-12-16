@@ -1,42 +1,3 @@
-<template>
-  <!-- 主容器 -->
-  <div class="main-container">
-    <!-- 欢迎界面 -->
-
-
-    <div v-if="showWelcome" class="welcome-container">
-      <div class="content-wrapper">
-        <div class="icon-box">
-          <!--          <i class="fas fa-comment-medical floating-icon"></i>-->
-          <img src="@\assets\Chat_Tongue.webp" alt="" class="fas fa-comment-medical floating-icon"
-               style="height: 20vh;border-radius: 50%;">
-          <!--          <i class="fas fa-arrow-left guide-arrow"></i>-->
-        </div>
-
-        <div class="text-content">
-          <h1 class="title">欢迎开启AI舌诊之旅 👋</h1>
-          <p class="subtitle">点击左侧{{ guideText }}<br>获取中医舌象分析</p>
-        </div>
-      </div>
-
-      <div class="decorations">
-        <div class="circle c1"></div>
-        <div class="circle c2"></div>
-        <div class="circle c3"></div>
-      </div>
-    </div>
-
-    <!-- 右侧提示 -->
-    <div v-if="showWelcome" class="right-prompt">
-      <div class="prompt-box">
-        <i class="fas fa-hand-point-left"></i>
-        <span>点击这边添加或查看对话</span>
-      </div>
-    </div>
-
-  </div>
-</template>
-
 <script setup>
 import {ref} from 'vue'
 
@@ -54,8 +15,36 @@ const changeGuideText = (text) => {
 defineExpose({handleChatStart, changeGuideText})
 </script>
 
+<template>
+  <div class="main-container">
+    <div v-if="showWelcome" class="welcome-container">
+      <div class="content-wrapper">
+        <div class="icon-box">
+          <img src="@\assets\Chat_Tongue.webp" alt="" class="fas fa-comment-medical floating-icon"
+               style="height: 20vh;border-radius: 50%;">
+        </div>
+        <div class="text-content">
+          <h1 class="title">Welcome to embark on your AI tongue diagnosis journey 👋</h1>
+          <p class="subtitle">Click left{{ guideText }}<br>to obtain the analysis of tongue signs in traditional Chinese medicine</p>
+        </div>
+      </div>
+      <div class="decorations">
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+        <div class="circle c3"></div>
+      </div>
+    </div>
+    <div v-if="showWelcome" class="right-prompt">
+      <div class="prompt-box">
+        <i class="fas fa-hand-point-left"></i>
+        <span>Click here to add or view the conversation</span>
+      </div>
+    </div>
+
+  </div>
+</template>
+
 <style scoped>
-/* 主容器样式 */
 .main-container {
   position: relative;
   flex: 1;
@@ -63,7 +52,6 @@ defineExpose({handleChatStart, changeGuideText})
   overflow: hidden;
 }
 
-/* 欢迎界面样式 */
 .welcome-container {
   position: absolute;
   top: 0;
@@ -94,7 +82,6 @@ defineExpose({handleChatStart, changeGuideText})
   filter: drop-shadow(0 4px 6px rgba(79, 70, 229, 0.15));
 }
 
-/* 动画效果 */
 .floating-icon {
   animation: float 3s ease-in-out infinite;
 }
@@ -108,7 +95,6 @@ defineExpose({handleChatStart, changeGuideText})
   }
 }
 
-/* 文字样式 */
 .title {
   font-size: 2.5rem;
   color: #1f2937;
@@ -121,7 +107,6 @@ defineExpose({handleChatStart, changeGuideText})
   line-height: 1.75rem;
 }
 
-/* 装饰元素 */
 .decorations .circle {
   position: absolute;
   border-radius: 50%;
@@ -153,7 +138,6 @@ defineExpose({handleChatStart, changeGuideText})
   left: 30%;
 }
 
-/* 右侧提示 */
 .right-prompt {
   position: absolute;
   left: 2rem;
@@ -173,8 +157,6 @@ defineExpose({handleChatStart, changeGuideText})
   animation: slideIn 4s ease-out, hover-shake 2s ease-in-out infinite;;
 }
 
-
-/* 响应式设计 */
 @media (max-width: 768px) {
   .fa-comment-medical {
     font-size: 5rem !important;
@@ -214,7 +196,6 @@ defineExpose({handleChatStart, changeGuideText})
   }
 }
 
-/* 新增晃动动画 */
 @keyframes hover-shake {
   0%, 100% {
     transform: translateY(-50%) translateX(0);
@@ -227,7 +208,6 @@ defineExpose({handleChatStart, changeGuideText})
   }
 }
 
-/* 调整原有进入动画 */
 @keyframes slideIn {
   from {
     transform: translateY(-50%) translateX(100%);

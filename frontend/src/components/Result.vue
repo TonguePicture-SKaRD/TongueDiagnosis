@@ -1,51 +1,9 @@
-<template>
-  <div class="card" v-for="item in rec" :key="rec.id" v-if="isEmpty === true">
-    <el-descriptions
-        title="Result"
-        direction="vertical"
-        :column="4"
-        :size="size"
-        border
-    >
-      <el-descriptions-item label="图片" width="450px">
-        <el-tag size="small"><a :href=item.img_src>点击查看</a></el-tag>
-      </el-descriptions-item>
-      <el-descriptions-item label="检测结果" v-if="item.state === 0">
-        检测中，请稍等
-      </el-descriptions-item>
-      <el-descriptions-item label="检测结果" v-if="item.state === 1">
-        {{ color[item.result.tongue_color] }}{{ outcolor[item.result.coating_color] }}{{ rot[item.result.rot_greasy] }}{{ thick[item.result.tongue_thickness] }}
-      </el-descriptions-item>
-      <el-descriptions-item label="检测结果" v-if="item.state === 201">
-        未检测到舌象，请重新上传清晰舌象
-      </el-descriptions-item>
-      <el-descriptions-item label="检测结果" v-if="item.state === 202">
-        出现多个舌象，请重新拍照上传
-      </el-descriptions-item>
-      <el-descriptions-item label="检测结果" v-if="item.state === 203">
-        文件类型有误，请核对后重新上传
-      </el-descriptions-item>
-    </el-descriptions>
-  </div>
-  <div v-else><h1 class="nores">暂无检测结果</h1></div>
-</template>
-
-<style>
-.nores {
-  text-align: center;
-  color: #00bd7e;
-}
-</style>
-
 <script setup>
 import axios from "axios";
 import {ref, onMounted} from 'vue'
 
 const emit = defineEmits(["getRecord"])
-
-
 const props = defineProps(['isupstate'])
-
 const color = {
   [0]: "舌色：淡白舌",
   [1]: "舌色：淡红舌",
@@ -69,7 +27,6 @@ const thick = {
 
 function reverseArray1(arr) {
   for (let index = 0; index < Math.floor(arr.length / 2); index++) {
-    // 借助第三方变量交换两个变量的值
     let temp = arr[index];
     arr[index] = arr[arr.length - 1 - index];
     arr[arr.length - 1 - index] = temp
@@ -80,7 +37,6 @@ function reverseArray1(arr) {
 let rec = ref([0]);
 let isEmpty = ref(false)
 
-//不做轮询，在onmountED就先get一遍record
 onMounted(function () {
   axios.get("/user/record", {
     headers: {
@@ -126,18 +82,52 @@ onMounted(function () {
               console.log(error);
             })
             .then(res => {
-              //视情况而定
               if (rec.value[0].state !== 0 || rec.value === []) {
-                // 这里可以写一些中止轮询的条件 比如code值返回0时
                 console.log("轮询停止")
                 emit("getRecord", false)
-                // clearInterval(timer)
               }
             })
       }
     }, 0)
   }, 2000)
 });
-
-
 </script>
+
+<template>
+  <div class="card" v-for="item in rec" :key="rec.id" v-if="isEmpty === true">
+    <el-descriptions
+        title="Result"
+        direction="vertical"
+        :column="4"
+        :size="size"
+        border
+    >
+      <el-descriptions-item label="图片" width="450px">
+        <el-tag size="small"><a :href=item.img_src>click to view</a></el-tag>
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 0">
+        Please wait while the test is being conducted.
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 1">
+        {{ color[item.result.tongue_color] }}{{ outcolor[item.result.coating_color] }}{{ rot[item.result.rot_greasy] }}{{ thick[item.result.tongue_thickness] }}
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 201">
+        No tongue image was detected. Please re-upload a clear tongue image.
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 202">
+        There are multiple tongue images, please take new photos and upload them.
+      </el-descriptions-item>
+      <el-descriptions-item label="检测结果" v-if="item.state === 203">
+        The file type is incorrect. Please check and re-upload.
+      </el-descriptions-item>
+    </el-descriptions>
+  </div>
+  <div v-else><h1 class="nores">No test results yet.</h1></div>
+</template>
+
+<style>
+.nores {
+  text-align: center;
+  color: #00bd7e;
+}
+</style>

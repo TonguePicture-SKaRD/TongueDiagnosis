@@ -361,7 +361,6 @@ watch(() => route.path, () => {
   align-items: center;
 }
 
-/* 用户区域 */
 .user-section {
   display: flex;
   align-items: center;
@@ -440,7 +439,6 @@ watch(() => route.path, () => {
   transform: rotate(180deg);
 }
 
-/* 认证按钮 */
 .auth-button {
   padding: 10px 20px;
   background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
@@ -458,7 +456,6 @@ watch(() => route.path, () => {
   box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
-/* 移动端菜单按钮 */
 .mobile-menu-button {
   display: none;
   align-items: center;
@@ -479,7 +476,6 @@ watch(() => route.path, () => {
   transform: translateY(-1px);
 }
 
-/* 移动端菜单 */
 .mobile-menu {
   position: absolute;
   top: 100%;

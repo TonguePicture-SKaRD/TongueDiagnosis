@@ -5,7 +5,7 @@ from ..orm import create_new_chat_records, get_chat_record
 
 
 class OllamaStreamChatter:
-    def __init__(self, model="deepseek-r1:1.5b",
+    def __init__(self, model="deepseek-r1:14b",
                  system_prompt=None
                  ):
         self.url = "http://localhost:11434/api/chat"

@@ -66,7 +66,6 @@ let user = reactive({
   Password: '',
 })
 
-//创建规则
 const rules = reactive<FormRules<typeof user>>({
   Email: [{validator: validateEmail, trigger: ['blur']}],
   Password: [{validator: validatePassword, trigger: ['blur']}],

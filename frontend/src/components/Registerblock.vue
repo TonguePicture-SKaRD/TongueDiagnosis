@@ -70,7 +70,6 @@ const validateEmail = (rule: any, value: any, callback: any) => {
   }
 };
 
-//检查密码一致
 const validatecheckPassword = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Please re-enter your password.'))

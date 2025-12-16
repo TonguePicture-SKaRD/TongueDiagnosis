@@ -1,5 +1,4 @@
 <script setup>
-import Header from "@/components/Header.vue";
 import { ref, onMounted } from 'vue';
 
 const isLoaded = ref(false);
