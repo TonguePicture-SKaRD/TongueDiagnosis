@@ -1,6 +1,6 @@
 <template>
   <div class="back-ground">
-    <Header class="header"></Header>
+<!--    <Header class="header"></Header>-->
     <div class="container_middle">
       <Register_Login/>
     </div>

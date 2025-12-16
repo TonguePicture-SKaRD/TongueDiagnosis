@@ -1,6 +1,5 @@
 <template>
   <div class="back-ground">
-    <Header class="Header"></Header>
 
     <div class="content">
       <!-- 侧边栏 -->
