@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item>
           <br>
-          <el-button class="register_b" type="primary" @click="register(Email_Password_register)" size="large">注册</el-button>
+          <el-button class="register_b" type="primary" @click="register(Email_Password_register)" size="large">Register</el-button>
         </el-form-item>
       </el-form>
     </el-card>

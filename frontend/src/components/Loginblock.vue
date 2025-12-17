@@ -11,7 +11,7 @@
           <br>
         </el-form-item>
         <el-form-item>
-          <el-button class="login_b" type="primary" @click="login(Email_Password_login)" size="large">登录</el-button>
+          <el-button class="login_b" type="primary" @click="login(Email_Password_login)" size="large">Login</el-button>
         </el-form-item>
       </el-form>
     </el-card>

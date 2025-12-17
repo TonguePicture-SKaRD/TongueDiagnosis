@@ -23,7 +23,7 @@
         <Rank/>
       </el-icon>
     </div>
-    <input @keydown="handleKeyDown" class="message-input" v-model="inputValue" placeholder="请在此输入"
+    <input @keydown="handleKeyDown" class="message-input" v-model="inputValue" placeholder="Please enter here."
            style="height: auto;" v-if="!sendPic">
     <el-button type="success" :icon="Promotion" @click="sendToMain" size="large" style="font-size: 20px;" circle
                v-if="!sendPic"/>
