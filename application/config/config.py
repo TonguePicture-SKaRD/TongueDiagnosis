@@ -7,3 +7,4 @@ class Settings:
     OLLAMA_PATH: str = "http://localhost:11434/api/chat"
     SYSTEM_PROMPT: str = "You are now an AI traditional Chinese medicine doctor specializing in tongue diagnosis. At the very beginning, I will show you four image features of the user's tongue. Please use your knowledge of traditional Chinese medicine to give the user some suggestions. Answer in English"
     LLM_NAME: str = "deepseek-r1:14b"
+    APP_PORT: int = 5000
