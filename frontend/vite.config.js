@@ -1,13 +1,12 @@
 import {fileURLToPath, URL} from 'node:url'
-
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
+import settings from "./src/config/config.js";
 
-// https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
         vue(),
@@ -25,10 +24,17 @@ export default defineConfig({
         }
     },
     server: {
-        host: '0.0.0.0', // 监听所有网络接口
-        port: 5173,      // 监听指定的端口（可以保持不变，或者修改为你需要的端口）
+        host: '0.0.0.0',
+        port: 5173,
+        proxy: {
+            '/api': {
+                target: settings.ServerUrl,
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, '/api')
+            },
+        }
     },
-    base: './', // 确保静态资源路径正确
+    base: './',
     build: {
         outDir: 'dist',
     },

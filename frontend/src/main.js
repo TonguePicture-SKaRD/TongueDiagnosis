@@ -1,19 +1,17 @@
 import './assets/main.css'
-
 import {createApp} from 'vue'
 import {createPinia} from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-
 import App from './App.vue'
 import router from './router'
-
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import settings from './config/config.js'
 
 let token = localStorage.getItem('token');
 
-axios.defaults.baseURL = 'http://10.252.128.47:5000/api';
+axios.defaults.baseURL = settings.ServerUrl + '/api';
 axios.defaults.headers = {
     Authorization: "Bearer " + token
 }
@@ -25,13 +23,9 @@ app.use(router)
 app.use(VueAxios, axios)
 app.config.globalProperties.$axios = axios
 app.mount('#app')
-//
+
 router.beforeEach((to, from, next) => {
-    /**
-     * 未登录则跳转到登录页
-     * 未登录跳转到登录页,也可以通过axios的响应拦截器去实现,但是会先在当前页面渲染一下,再跳转到登录页,会有个闪动的现象
-     * 这里通过路由守卫的方式,不会在当前页闪现一下,但是需要在每个路由组件添加一个是否需要登录的标识位,如本项目中的requireAuth字段
-     */
+    // Using the route guard, if the user is not logged in, they will be redirected to the login page.
     if (to.matched.some((auth) => auth.meta.requireAuth)) {
         let token = localStorage.getItem("token");
         if (token) {

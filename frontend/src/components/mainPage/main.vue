@@ -1,74 +1,16 @@
-<template>
-  <!--  对话页面-->
-  <div class="chat-page" ref="chatContainer">
-    <!--    对话框-->
-    <div
-        v-for="(message, index) in messages"
-        :key="index"
-        class="message-item"
-        :class="message.isUser ? 'user-message' : 'ai-message'"
-    >
-
-      <div class="avatar" @dblclick="deleteMessage(index)">
-        <img v-if="message.isUser" :src="userAvatar" alt="Image"/>
-        <img v-else :src="aiAvatar" alt="Image"/>
-      </div>
-
-      <div class="message-content">
-        <!--        <div v-loading="message.loading" element-loading-background="rgba(255, 255, 255, 0.8)">-->
-        <!-- 加载替换 -->
-        <div v-if="message.loading" class="loading-text-gradient">
-          生成中...
-        </div>
-
-        <!-- 消息 -->
-        <div v-else>
-          <div v-if="!message.isUser" class="message-text markdown-body" v-html="renderedText(message.text)"></div>
-          <div v-else class="message-text">
-            <div v-if="message.isPicture">
-              <img :src="message.text" alt="舌头图片"
-                   style="width: 200px; border: 1px solid #ddd; border-radius: 10px;"/>
-            </div>
-
-            <div v-else>
-              {{ message.text }}
-            </div>
-          </div>
-
-        </div>
-        <div class="message-time">{{ message.time }}
-          <!-- 添加语音播放按钮 -->
-          <button v-if="!message.isUser && !message.loading" class="speech-button right-aligned"
-                  @click="fetchAndPlayAudio(message.text)">🔊
-            播放音频
-          </button>
-
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-</template>
-
 <script setup>
-// 一再接受inputValue
 import {nextTick, onBeforeMount, onMounted, ref, watch} from 'vue';
-import MarkdownIt from 'markdown-it'; //渲染markdown
-import hljs from 'highlight.js'; // 引入代码高亮库
+import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js';
 import 'github-markdown-css';
-import {useStateStore} from "@/stores/stateStore"; //状态获取
-import 'highlight.js/styles/github.css'; // 确保引入样式文件
+import {useStateStore} from "@/stores/stateStore";
+import 'highlight.js/styles/github.css';
 import axios from 'axios';
-import emojiRegex from 'emoji-regex'; //去除emoji
+import emojiRegex from 'emoji-regex';
 import {ElMessage} from "element-plus";
 
-const sessionId = ref() //会话id
+const sessionId = ref()
 
-
-//初始化图片和解答
 const initPage = (basePic, sessionName) => {
   messages.value.push({
     text: basePic.base64,
@@ -84,12 +26,9 @@ const initPage = (basePic, sessionName) => {
     isPicture: true
   });
   getPictureAnswer(basePic.fileData, sessionName);
-
 }
 
-//后端返回的数据注入
 const inputData = (data, id) => {
-  // console.log(id)
   sessionId.value = id;
   messages.value = data;
   setTimeout(() => {
@@ -98,8 +37,6 @@ const inputData = (data, id) => {
 
 }
 
-
-//获取记录
 async function getRecordData() {
   try {
     const response = await axios.get('/user/record', {
@@ -107,30 +44,29 @@ async function getRecordData() {
         'Authorization': 'Bearer ' + localStorage.getItem('token')
       }
     });
-    console.log(response.data.data[response.data.data.length - 1].state); // 返回后端返回的数据
+    console.log(response.data.data[response.data.data.length - 1].state);
   } catch (error) {
     console.error('获取 /user/record 失败:', error);
-    return null; // 失败时返回 null
+    return null;
   }
 }
 
-//重置全部
 const resetPage = () => {
   messages.value = [
     {
-      text: "# 👋 欢迎来到 **AI 中医舌诊**！\n" +
+      text: "# 👋 Welcome to  **AI Tongue Diagnosis**！\n" +
           "\n" +
-          "📸 **请首先上传您的舌像图片**，AI 将根据中医理论进行智能分析，提供健康建议。\n" +
+          "📸 **Please first upload your tongue image.**，AI will conduct intelligent analysis based on traditional Chinese medicine theory and provide health advice.\n" +
           "\n" +
-          "🔍 **如何拍摄舌像？**\n" +
-          "1. 在自然光下拍摄，避免过暗或过亮。\n" +
-          "2. 放松舌头，尽量伸出，不要用力。\n" +
-          "3. 保持清洁，避免食物残留影响判断。\n" +
+          "🔍 **How to take a picture of the tongue?**\n" +
+          "1. Shoot in natural light to avoid being too dark or too bright.\n" +
+          "2. Relax your tongue and stretch it out as far as possible. Don't exert any force.\n" +
+          "3. Keep clean to avoid food residue affecting your judgment.\n" +
           "\n" +
-          "💡 **免责声明**  \n" +
-          "本系统提供的分析结果仅供参考，不能替代专业医生的诊断，如有健康问题，请咨询中医师或专业医生。\n" +
+          "💡 **Disclaimer**  \n" +
+          "The analysis results provided by this system are for reference only and cannot replace the diagnosis made by a professional doctor. If you have any health issues, please consult a traditional Chinese medicine doctor or a professional medical expert.\n" +
           "\n" +
-          "➡ **请上传舌像，让我们开始吧！**\n",
+          "➡ **Please upload your tongue image and let's get started!**\n",
       isUser: false,
       time: new Date().toLocaleString('default', {
         year: 'numeric',
@@ -147,25 +83,23 @@ const resetPage = () => {
 
 defineExpose({initPage, inputData, resetPage})
 
-
-// 使用 ref 定义响应式变量
-const userAvatar = ref("./static/userDefault.jpg");  // 用户头像
-const aiAvatar = ref("./static");      // AI 头像
+const userAvatar = ref("./static/userDefault.jpg");
+const aiAvatar = ref("./static");
 const messages = ref([
   {
-    text: "# 👋 欢迎来到 **AI 中医舌诊**！\n" +
+    text: "# 👋 Welcome to  **AI Tongue Diagnosis**！\n" +
         "\n" +
-        "📸 **请首先上传您的舌像图片**，AI 将根据中医理论进行智能分析，提供健康建议。\n" +
+        "📸 **Please first upload your tongue image.**，AI will conduct intelligent analysis based on traditional Chinese medicine theory and provide health advice.\n" +
         "\n" +
-        "🔍 **如何拍摄舌像？**\n" +
-        "1. 在自然光下拍摄，避免过暗或过亮。\n" +
-        "2. 放松舌头，尽量伸出，不要用力。\n" +
-        "3. 保持清洁，避免食物残留影响判断。\n" +
+        "🔍 **How to take a picture of the tongue?**\n" +
+        "1. Shoot in natural light to avoid being too dark or too bright.\n" +
+        "2. Relax your tongue and stretch it out as far as possible. Don't exert any force.\n" +
+        "3. Keep clean to avoid food residue affecting your judgment.\n" +
         "\n" +
-        "💡 **免责声明**  \n" +
-        "本系统提供的分析结果仅供参考，不能替代专业医生的诊断，如有健康问题，请咨询中医师或专业医生。\n" +
+        "💡 **Disclaimer**  \n" +
+        "The analysis results provided by this system are for reference only and cannot replace the diagnosis made by a professional doctor. If you have any health issues, please consult a traditional Chinese medicine doctor or a professional medical expert.\n" +
         "\n" +
-        "➡ **请上传舌像，让我们开始吧！**\n",
+        "➡ **Please upload your tongue image and let's get started!**\n",
     isUser: false,
     time: new Date().toLocaleString('default', {
       year: 'numeric',
@@ -177,15 +111,11 @@ const messages = ref([
     loading: false,
     isPicture: false
   }]);
-//loading用来记录是否正在加载
 
-let newMessage = ref(''); //发送的数据
-const chatContainer = ref(null); //聊天框对象
-// 获取 Pinia Store
+let newMessage = ref('');
+const chatContainer = ref(null);
 const stateStore = useStateStore();
 
-
-// 初始化 MarkdownIt 实例，并启用代码高亮功能
 const md = new MarkdownIt({
   highlight: function (str, lang) {
     if (lang && hljs.getLanguage(lang)) {
@@ -198,26 +128,18 @@ const md = new MarkdownIt({
   },
 });
 
-// 去除emoji和markdown
 function org(input) {
-  // 移除 Markdown 标记
   const noMarkdown = input
-      .replace(/!\[.*?\]\(.*?\)/g, '')  // 移除图片标记
-      .replace(/\[(.*?)\]\(.*?\)/g, '$1')  // 移除链接标记，只保留链接文本
-      .replace(/[`_*~#>]/g, '')  // 移除其他 Markdown 符号
-      .replace(/\n+/g, ' ');  // 将换行替换为空格
-
-  // 移除 Emoji
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+      .replace(/[`_*~#>]/g, '')
+      .replace(/\n+/g, ' ');
   const regex = emojiRegex();
   return noMarkdown.replace(regex, '')
 }
 
-
-// 发送用户消息
 const sendMessage = async () => {
-
   if (newMessage.value.trim() !== '') {
-    // 用户信息推入
     messages.value.push({
       text: newMessage.value,
       isUser: true,
@@ -231,18 +153,15 @@ const sendMessage = async () => {
       loading: false,
       isPicture: false
     });
-    //保存
     saveHistory();
     await nextTick();
     scrollToBottom();
-    await sendAIMessage(); //  AI 回复
+    await sendAIMessage();
   }
 };
 
-// AI 回复
 const sendAIMessage = async () => {
   setTimeout(async () => {
-    // ai信息推入
     messages.value.push({
       text: '',
       isUser: false,
@@ -254,22 +173,19 @@ const sendAIMessage = async () => {
         minute: '2-digit'
       }),
       loading: true,
-      isPicture: false
+      isPicture: false,
+      receivedContent: false // 标记是否已接收到内容
     });
     await scrollToBottom();
     await getAnswer();
     await nextTick();
-
   }, 500);
 };
 
 
 const getAnswer = async () => {
-  const timeout = 10000; // 设置超时时间（以毫秒为单位，例如10秒）
-
-  // 从 localStorage 获取 token
+  const timeout = 40000;
   let token = localStorage.getItem('token');
-
   const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("请求超时")), timeout)
   );
@@ -282,13 +198,13 @@ const getAnswer = async () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // 添加 Authorization 头
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           input: personalPrompt + newMessage.value,
         }),
       }),
-      timeoutPromise, // 如果 fetch 未完成，此 promise 将优先返回超时错误
+      timeoutPromise,
     ]);
 
     if (!response.ok) {
@@ -303,26 +219,28 @@ const getAnswer = async () => {
     const decoder = new TextDecoder("utf-8");
     let done = false;
 
-    messages.value[messages.value.length - 1].loading = false; // 解除加载
+    // 不立即解除加载，而是保持Thinking状态直到收到第一块数据
 
     while (!done) {
       const {value, done: readerDone} = await reader.read();
       done = readerDone;
 
       if (value) {
-        // 解码数据块并按行分割
-        // console.log("value", value);
         const chunk = decoder.decode(value, {stream: true});
-        // console.log("chunk", chunk);
         const lines = chunk.split("\n");
-
-        // 逐行解析并处理
         lines.forEach((line) => {
-          if (line.trim()) { // 忽略空行
+          if (line.trim()) {
             try {
               const parsedChunk = JSON.parse(line);
-              if (!parsedChunk.is_complete)
-                messages.value[messages.value.length - 1].text += parsedChunk.token;
+              if (!parsedChunk.is_complete && parsedChunk.token) {
+                // 第一次收到有效token时，才停止thinking状态
+                const currentMessage = messages.value[messages.value.length - 1];
+                if (!currentMessage.receivedContent) {
+                  currentMessage.receivedContent = true;
+                  currentMessage.loading = false; // 解除加载
+                }
+                currentMessage.text += parsedChunk.token;
+              }
               scrollToBottom();
             } catch (parseError) {
               console.warn("JSON解析失败，跳过该行: ", line);
@@ -331,19 +249,26 @@ const getAnswer = async () => {
         });
       }
     }
-
     scrollToBottom();
     console.log("流结束");
   } catch (error) {
     console.error("错误: ", error);
+    // 错误时停止最后一条消息的加载状态
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].loading) {
+      const currentMessage = messages.value[messages.value.length - 1];
+      currentMessage.loading = false;
+      // 如果没有接收到内容，标记为已接收，这样就不会在UI上显示空白
+      if (!currentMessage.receivedContent) {
+        currentMessage.receivedContent = true;
+      }
+    }
     messages.value.pop(); // 直接删去最后一个
     if (error.message === "请求超时") {
-      ErrorPop("请求超时，请重试");
+      ErrorPop("Request timeout. Please try again.");
     } else {
-      ErrorPop("出错请重试");
+      ErrorPop("Encounter an error, please try again.");
     }
   }
-  // 保存
   saveHistory();
 };
 
@@ -353,11 +278,9 @@ function logFormData(formData) {
   }
 }
 
-//图片专用传输线路
 const getPictureAnswer = async (fileData, sessionName) => {
   emit("get-return", {success: false});
   setTimeout(async () => {
-    // ai信息推入
     messages.value.push({
       text: '',
       isUser: false,
@@ -369,13 +292,13 @@ const getPictureAnswer = async (fileData, sessionName) => {
         minute: '2-digit'
       }),
       loading: true,
-      isPicture: false
+      isPicture: false,
+      receivedContent: false // 标记是否已接收到内容
     });
     await nextTick();
   }, 0);
-  const timeout = 15000; // 设置超时时间（以毫秒为单位，例如10秒）
+  const timeout = 40000;
 
-  // 从 localStorage 获取 token
   let token = localStorage.getItem('token');
 
   const timeoutPromise = new Promise((_, reject) =>
@@ -387,7 +310,7 @@ const getPictureAnswer = async (fileData, sessionName) => {
       (async () => {
         const formData = new FormData();
         formData.append('file_data', fileData);
-        formData.append('user_input', "描述一下");
+        formData.append('user_input', "Descript it");
         formData.append('name', sessionName);
         logFormData(formData);
 
@@ -399,12 +322,11 @@ const getPictureAnswer = async (fileData, sessionName) => {
           body: formData,
         });
       })(),
-      timeoutPromise, // 如果 fetch 未完成，此 promise 将优先返回超时错误
+      timeoutPromise,
     ]);
 
 
     if (!response.ok) {
-      // ErrorPop("出错请重试");
       emit("get-return", {success: false});
 
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -419,26 +341,29 @@ const getPictureAnswer = async (fileData, sessionName) => {
     const decoder = new TextDecoder("utf-8");
     let done = false;
 
-    messages.value[messages.value.length - 1].loading = false; // 解除加载
+    // 不立即解除加载，而是保持Thinking状态直到收到第一块数据
 
     while (!done) {
       const {value, done: readerDone} = await reader.read();
       done = readerDone;
 
       if (value) {
-        // 解码数据块并按行分割
-        // console.log("value", value);
         const chunk = decoder.decode(value, {stream: true});
-        // console.log("chunk", chunk);
         const lines = chunk.split("\n");
 
-        // 逐行解析并处理
         lines.forEach((line) => {
-          if (line.trim()) { // 忽略空行
+          if (line.trim()) {
             try {
               const parsedChunk = JSON.parse(line);
-              if (!parsedChunk.is_complete)
-                messages.value[messages.value.length - 1].text += parsedChunk.token;
+              if (!parsedChunk.is_complete && parsedChunk.token) {
+                // 第一次收到有效token时，才停止thinking状态
+                const currentMessage = messages.value[messages.value.length - 1];
+                if (!currentMessage.receivedContent) {
+                  currentMessage.receivedContent = true;
+                  currentMessage.loading = false; // 解除加载
+                }
+                currentMessage.text += parsedChunk.token;
+              }
               sessionId.value = parsedChunk.session_id;
               emit("back-id", sessionId.value);
               scrollToBottom();
@@ -450,41 +375,52 @@ const getPictureAnswer = async (fileData, sessionName) => {
       }
     }
 
+    // 确保在流结束时停止最后一条消息的加载状态
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].loading) {
+      const currentMessage = messages.value[messages.value.length - 1];
+      currentMessage.loading = false;
+      // 如果没有接收到内容，标记为已接收，这样就不会在UI上显示空白
+      if (!currentMessage.receivedContent) {
+        currentMessage.receivedContent = true;
+      }
+    }
     scrollToBottom();
     console.log("流结束");
   } catch (error) {
     emit("get-return", {success: false});
     console.error("错误: ", error);
+    // 错误时停止最后一条消息的加载状态
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].loading) {
+      const currentMessage = messages.value[messages.value.length - 1];
+      currentMessage.loading = false;
+      // 如果没有接收到内容，标记为已接收，这样就不会在UI上显示空白
+      if (!currentMessage.receivedContent) {
+        currentMessage.receivedContent = true;
+      }
+    }
     messages.value.pop(); // 直接删去最后一个
     if (error.message === "请求超时") {
-      ErrorPop("请求超时，请重试");
+      ErrorPop("Request timeout. Please try again.");
     } else {
-      ErrorPop("出错请重试");
+      ErrorPop("Encounter an error, please try again.");
     }
   }
 };
 
-
-//传输图片时回传id
 const getPictureId = () => {
   return sessionId.value;
 }
 
-//返回markdown
 const renderedText = (text) => {
   return md.render(text);
 };
 
-
-// 滚动到底部
 const scrollToBottom = () => {
   if (chatContainer.value) {
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
   }
 };
 
-
-//音频类型监听
 let audioType = "De";
 watch(
     () => stateStore.audioType,
@@ -493,116 +429,86 @@ watch(
     }
 );
 
-const isPlaying = ref(false); // 记录是否正在播放
-
-// 请求播放音频功能
+const isPlaying = ref(false);
 const fetchAndPlayAudio = async (text) => {
-  text = org(text); // 处理文本
+  text = org(text);
 
   if (audioType === "De") {
     if (isPlaying.value) {
-      stopAudio(); // 如果正在播放，则停止播放
+      stopAudio();
     } else {
       playAudio(text);
     }
   }
 };
 
-const voices = ref([]); // 存储可用的语音列表
-
-// 加载可用的语音
+const voices = ref([]);
 const loadVoices = () => {
   voices.value = window.speechSynthesis.getVoices().filter(voice => voice.lang.startsWith("zh"));
 };
 
 onMounted(() => {
   loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices; // 监听语音列表变化
+  window.speechSynthesis.onvoiceschanged = loadVoices;
 });
 
-// 停止当前正在播放的音频
 const stopAudio = () => {
   window.speechSynthesis.cancel();
-  isPlaying.value = false; // 更新播放状态
+  isPlaying.value = false;
 };
 
 const playAudio = (text) => {
   if (!text) {
     return;
   }
-
   const synth = window.speechSynthesis;
   const utterance = new SpeechSynthesisUtterance(text);
-
-  // 设置语言为中文
   utterance.lang = "zh-CN";
-
-  // 选择音色，确保数组索引不越界
   if (voices.value.length > 6) {
     utterance.voice = voices.value[6];
   }
-
-  // 监听播放开始和结束事件
   utterance.onstart = () => {
     isPlaying.value = true;
   };
-
   utterance.onend = () => {
     isPlaying.value = false;
   };
-
   utterance.onerror = () => {
     isPlaying.value = false;
   };
-
-  // 播放音频
   synth.speak(utterance);
 };
 
-
-//头像载入和音频初始化和url初始化
 let baseURL = ""
 let personalPrompt = ""
 onBeforeMount(() => {
   aiAvatar.value = stateStore.aiImagePath;
   userAvatar.value = stateStore.userImagePath;
-  stateStore.setaudioType("De"); //先设置成默认音频
-  baseURL = stateStore.baseUrl; //先设置成默认url
-  personalPrompt = stateStore.personalPrompt;//个人prompt
-
-  //初始化消息记录
-  // if (stateStore.chatHistory.length !== 0) messages.value = stateStore.chatHistory;
-
+  stateStore.setaudioType("De");
+  baseURL = stateStore.baseUrl;
+  personalPrompt = stateStore.personalPrompt;
 });
 
-//记录信息
 const saveHistory = () => {
   stateStore.setChatHistory(messages.value);
 }
 
-
-// 接收来自父组件的 props
 const props = defineProps({
   receivedInput: String
 });
 
-// 监听 props 的变化
 watch(() => props.receivedInput[0], (newValue) => {
   if (newValue !== undefined) {
-    const firstValue = props.receivedInput.slice(2); // 获取第2个值
-    handleReceivedInput(firstValue); // 对第2个值进行操作
+    const firstValue = props.receivedInput.slice(2);
+    handleReceivedInput(firstValue);
   }
 });
 
-
-// 处理收到的数据
 const handleReceivedInput = (inputValue) => {
-  // console.log('子组件main处理收到的数据:', inputValue);
   newMessage.value = inputValue;
   sendMessage();
 };
 
-//错误弹窗
 const ErrorPop = (info, time = 3000) => {
   ElMessage({
     showClose: true,
@@ -612,10 +518,6 @@ const ErrorPop = (info, time = 3000) => {
   })
 }
 
-//音频的互动ui逻辑
-
-
-//成功弹窗
 const SuccessPop = (info, time = 2000) => {
   ElMessage({
     showClose: true,
@@ -625,30 +527,63 @@ const SuccessPop = (info, time = 2000) => {
   })
 }
 
-// 删除消息
 const deleteMessage = (index) => {
   messages.value.splice(index, 1);
-  //保存
   saveHistory();
 };
-
 const emit = defineEmits(['get-return', 'back-id']);
-
 </script>
 
-<style scoped>
+<template>
+  <div class="chat-page" ref="chatContainer">
+    <div
+        v-for="(message, index) in messages"
+        :key="index"
+        class="message-item"
+        :class="message.isUser ? 'user-message' : 'ai-message'"
+    >
+      <div class="avatar" @dblclick="deleteMessage(index)">
+        <img v-if="message.isUser" :src="userAvatar" alt="Image"/>
+        <img v-else :src="aiAvatar" alt="Image"/>
+      </div>
+      <div class="message-content">
+        <div v-if="message.loading" class="loading-text-gradient">
+          Thinking...
+        </div>
+        <div v-else>
+          <div v-if="!message.isUser" class="message-text markdown-body" v-html="renderedText(message.text)"></div>
+          <div v-else class="message-text">
+            <div v-if="message.isPicture">
+              <img :src="message.text" alt="舌头图片"
+                   style="width: 200px; border: 1px solid #ddd; border-radius: 10px;"/>
+            </div>
+            <div v-else>
+              {{ message.text }}
+            </div>
+          </div>
+        </div>
+        <div class="message-time">{{ message.time }}
+          <button v-if="!message.isUser && !message.loading" class="speech-button right-aligned"
+                  @click="fetchAndPlayAudio(message.text)">🔊
+            Play audio
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
+<style scoped>
 .chat-page {
   display: flex;
   flex-direction: column;
   padding: 0px;
-  margin-top: 20px; /* 让容器与顶部保持距离 */
-  height: calc(100vh - 100px); /* 调整高度，以适应新的margin-top */
+  margin-top: 20px;
+  height: calc(100vh - 100px);
   overflow-y: auto;
   flex-grow: 1;
   scroll-behavior: smooth;
 }
-
 
 .message-item {
   display: flex;
@@ -683,10 +618,10 @@ const emit = defineEmits(['get-return', 'back-id']);
   border-radius: 10px;
   padding: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  font-family: 'Arial', 'Helvetica', sans-serif; /* 设置字体 */
-  font-size: 16px; /* 字体大小 */
-  line-height: 1.0; /* 行间距，使内容更易读 */
-  color: #333; /* 字体颜色 */
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  font-size: 16px;
+  line-height: 1.0;
+  color: #333;
 }
 
 .user-message .message-content {
@@ -694,7 +629,7 @@ const emit = defineEmits(['get-return', 'back-id']);
 }
 
 .ai-message .message-content {
-  font-size: 100px; /* AI 回复字体大小 */
+  font-size: 100px;
 }
 
 .message-time {
@@ -718,15 +653,13 @@ const emit = defineEmits(['get-return', 'back-id']);
 }
 
 .loading-text-gradient {
-  font-size: 18px; /* 字体大小 */
-
-  font-family: 'Times New Roman', serif; /* 使用 Times New Roman 字体 */
-  font-style: italic; /* 设置斜体 */
+  font-size: 18px;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
   position: relative;
-  color: #c0c0c0; /* 设置较暗的文字颜色作为背景 */
-  overflow: hidden; /* 确保动画在边界内 */
-  padding-bottom: 5px; /* 只向下增加5px的内边距 */
-
+  color: #c0c0c0;
+  overflow: hidden;
+  padding-bottom: 5px;
 }
 
 .loading-text-gradient::before {
@@ -736,19 +669,19 @@ const emit = defineEmits(['get-return', 'back-id']);
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, rgba(0, 0, 255, 0.1), rgb(255, 255, 255), rgba(0, 0, 255, 0.1)); /* 改为蓝色渐变 */
-  background-size: 1000% 100%; /* 增加背景大小以拉宽光条的效果 */
+  background: linear-gradient(120deg, rgba(0, 0, 255, 0.1), rgb(255, 255, 255), rgba(0, 0, 255, 0.1));
+  background-size: 1000% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shine 3.0s ease-in-out infinite; /* 缩短动画时间并使用 ease-in-out 效果，使得动画看起来更顺滑 */
+  animation: shine 3.0s ease-in-out infinite;
 }
 
 @keyframes shine {
   0% {
-    background-position: -150% 0; /* 光条从更远的左边开始 */
+    background-position: -150% 0;
   }
   100% {
-    background-position: 150% 0; /* 光条移动到更远的右边 */
+    background-position: 150% 0;
   }
 }
 
@@ -761,5 +694,4 @@ const emit = defineEmits(['get-return', 'back-id']);
   border: none;
   cursor: pointer;
 }
-
 </style>

@@ -13,3 +13,4 @@ frontend/public/tongue
 /node_modules
 AppDatabase.db
 *.db
+*.db
