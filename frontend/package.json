@@ -1,9 +1,10 @@
 {
-  "name": "frontend",
-  "version": "0.0.0",
+  "name": "ai-tongue-diagnosis",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "main": "main.js",
+  "homepage": "./",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -43,8 +44,9 @@
     "vitest": "^1.2.2"
   },
   "build": {
-    "appId": "com.example.yourapp",
-    "productName": "AI舌诊",
+    "appId": "com.markyan04.paradoxai",
+    "productName": "Tongue Diagnosis Kit",
+    "copyright": "Copyright © 2025 markyan04",
     "directories": {
       "output": "dist_electron"
     },
@@ -53,8 +55,32 @@
       "main.js"
     ],
     "win": {
-      "target": "nsis",
-      "icon": "public/logo.ico"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "public/logo.ico",
+      "artifactName": "${productName}-Setup-${version}-${arch}.${ext}",
+      "publisherName": "Hongyu 'Markyan04' Yan",
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "public/logo.ico",
+      "uninstallerIcon": "public/logo.ico",
+      "installerHeaderIcon": "public/logo.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Tongue Diagnosis Kit",
+      "menuCategory": "Medical",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "installerLanguages": ["zh_CN", "en_US"]
     },
     "mac": {
       "target": "dmg"
