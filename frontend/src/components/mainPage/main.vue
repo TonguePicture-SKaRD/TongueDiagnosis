@@ -173,7 +173,8 @@ const sendAIMessage = async () => {
         minute: '2-digit'
       }),
       loading: true,
-      isPicture: false
+      isPicture: false,
+      receivedContent: false // 标记是否已接收到内容
     });
     await scrollToBottom();
     await getAnswer();
@@ -218,7 +219,7 @@ const getAnswer = async () => {
     const decoder = new TextDecoder("utf-8");
     let done = false;
 
-    messages.value[messages.value.length - 1].loading = false; // 解除加载
+    // 不立即解除加载，而是保持Thinking状态直到收到第一块数据
 
     while (!done) {
       const {value, done: readerDone} = await reader.read();
@@ -231,8 +232,15 @@ const getAnswer = async () => {
           if (line.trim()) {
             try {
               const parsedChunk = JSON.parse(line);
-              if (!parsedChunk.is_complete)
-                messages.value[messages.value.length - 1].text += parsedChunk.token;
+              if (!parsedChunk.is_complete && parsedChunk.token) {
+                // 第一次收到有效token时，才停止thinking状态
+                const currentMessage = messages.value[messages.value.length - 1];
+                if (!currentMessage.receivedContent) {
+                  currentMessage.receivedContent = true;
+                  currentMessage.loading = false; // 解除加载
+                }
+                currentMessage.text += parsedChunk.token;
+              }
               scrollToBottom();
             } catch (parseError) {
               console.warn("JSON解析失败，跳过该行: ", line);
@@ -245,6 +253,15 @@ const getAnswer = async () => {
     console.log("流结束");
   } catch (error) {
     console.error("错误: ", error);
+    // 错误时停止最后一条消息的加载状态
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].loading) {
+      const currentMessage = messages.value[messages.value.length - 1];
+      currentMessage.loading = false;
+      // 如果没有接收到内容，标记为已接收，这样就不会在UI上显示空白
+      if (!currentMessage.receivedContent) {
+        currentMessage.receivedContent = true;
+      }
+    }
     messages.value.pop(); // 直接删去最后一个
     if (error.message === "请求超时") {
       ErrorPop("Request timeout. Please try again.");
@@ -275,7 +292,8 @@ const getPictureAnswer = async (fileData, sessionName) => {
         minute: '2-digit'
       }),
       loading: true,
-      isPicture: false
+      isPicture: false,
+      receivedContent: false // 标记是否已接收到内容
     });
     await nextTick();
   }, 0);
@@ -323,7 +341,7 @@ const getPictureAnswer = async (fileData, sessionName) => {
     const decoder = new TextDecoder("utf-8");
     let done = false;
 
-    messages.value[messages.value.length - 1].loading = false; // 解除加载
+    // 不立即解除加载，而是保持Thinking状态直到收到第一块数据
 
     while (!done) {
       const {value, done: readerDone} = await reader.read();
@@ -337,8 +355,15 @@ const getPictureAnswer = async (fileData, sessionName) => {
           if (line.trim()) {
             try {
               const parsedChunk = JSON.parse(line);
-              if (!parsedChunk.is_complete)
-                messages.value[messages.value.length - 1].text += parsedChunk.token;
+              if (!parsedChunk.is_complete && parsedChunk.token) {
+                // 第一次收到有效token时，才停止thinking状态
+                const currentMessage = messages.value[messages.value.length - 1];
+                if (!currentMessage.receivedContent) {
+                  currentMessage.receivedContent = true;
+                  currentMessage.loading = false; // 解除加载
+                }
+                currentMessage.text += parsedChunk.token;
+              }
               sessionId.value = parsedChunk.session_id;
               emit("back-id", sessionId.value);
               scrollToBottom();
@@ -350,11 +375,29 @@ const getPictureAnswer = async (fileData, sessionName) => {
       }
     }
 
+    // 确保在流结束时停止最后一条消息的加载状态
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].loading) {
+      const currentMessage = messages.value[messages.value.length - 1];
+      currentMessage.loading = false;
+      // 如果没有接收到内容，标记为已接收，这样就不会在UI上显示空白
+      if (!currentMessage.receivedContent) {
+        currentMessage.receivedContent = true;
+      }
+    }
     scrollToBottom();
     console.log("流结束");
   } catch (error) {
     emit("get-return", {success: false});
     console.error("错误: ", error);
+    // 错误时停止最后一条消息的加载状态
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].loading) {
+      const currentMessage = messages.value[messages.value.length - 1];
+      currentMessage.loading = false;
+      // 如果没有接收到内容，标记为已接收，这样就不会在UI上显示空白
+      if (!currentMessage.receivedContent) {
+        currentMessage.receivedContent = true;
+      }
+    }
     messages.value.pop(); // 直接删去最后一个
     if (error.message === "请求超时") {
       ErrorPop("Request timeout. Please try again.");
@@ -505,7 +548,7 @@ const emit = defineEmits(['get-return', 'back-id']);
       </div>
       <div class="message-content">
         <div v-if="message.loading" class="loading-text-gradient">
-          Generating...
+          Thinking...
         </div>
         <div v-else>
           <div v-if="!message.isUser" class="message-text markdown-body" v-html="renderedText(message.text)"></div>
