@@ -191,3 +191,22 @@ TongueDiagnosisEN
     ├─── public/                         # Static assets served directly by the web server
     └─── src/                            # Source code for the Vue.js application
 ```
+
+## 🤝 Contribution
+
+We welcome contributions! Please follow this workflow:
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -m 'Add some feature'`)
+4. Push branch (`git push origin feature/your-feature`)
+5. Open Pull Request
+
+**Issue Reporting**: [New Issue](https://github.com/TonguePicture-SKaRD/TongueDiagnosis/issues)
+
+---
+
+## 📜 License
+
+This project is licensed under [AGPL-3.0](LICENSE). Third-party model weights follow original licenses:
+- SAM Model: [Apache 2.0](https://github.com/facebookresearch/segment-anything/blob/main/LICENSE)
+- Deepseek Model: [Official License](https://www.deepseek.com/terms)
