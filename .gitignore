@@ -14,3 +14,4 @@ frontend/public/tongue
 AppDatabase.db
 *.db
 *.db
+*.db
