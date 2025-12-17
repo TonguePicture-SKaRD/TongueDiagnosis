@@ -2,7 +2,7 @@ import threading
 import uvicorn
 from application import create_app
 from application.net.predict import TonguePredictor
-from .application.config import settings
+from application.config import settings
 
 app = create_app()
 if __name__ == '__main__':
