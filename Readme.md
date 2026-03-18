@@ -4,7 +4,7 @@
 [![Python 3.9](https://img.shields.io/badge/Python-3.9%2B-green.svg)](https://www.python.org/)
 [![Conda 23.10](https://img.shields.io/badge/Conda-23.10%2B-blue.svg)](https://docs.conda.io/)
 
-> A multimodal tongue image analysis system powered by deep learning, integrating object detection, image segmentation, and LLMs for intelligent TCM tongue diagnosis.
+> A multimodel tongue image analysis system powered by deep learning, integrating object detection, image segmentation, and LLMs for intelligent TCM tongue diagnosis and further suggestions.
 
 ---
 
